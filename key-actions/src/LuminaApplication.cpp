@@ -3,6 +3,8 @@
 
 #include "Layers/KeyActionsLayer.h"
 #include "Layers/DebugEventPanelLayer.h"
+#include "Layers/GlobalInputTestLayer.h"
+#include "Layers/InputCaptureTestLayer.h"
 
 Lumina::Application* Lumina::CreateApplication(int argc, char** argv)
 {
@@ -13,7 +15,9 @@ Lumina::Application* Lumina::CreateApplication(int argc, char** argv)
     
     Lumina::Application* app = new Lumina::Application(spec);
     // app->PushLayer<KeyActionsLayer>();
-	app->PushLayer<DebugEventPanelLayer>();
+	// app->PushLayer<DebugEventPanelLayer>();
+	// app->PushLayer<GlobalInputTestLayer>();
+	app->PushLayer<InputCaptureTestLayer>();
 
     return app;
 }
