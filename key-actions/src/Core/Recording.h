@@ -7,7 +7,7 @@
 
 namespace Lumina
 {
-    enum class ActionType
+    enum class RecordedAction
     {
         KeyPressed,
         KeyReleased,
@@ -19,13 +19,16 @@ namespace Lumina
 
     struct RecordedEvent
     {
-        ActionType Action;
-        float Time;  // Timestamp relative to recording start
+        RecordedAction Action;
+        float Time;
 
-        // Key events
         KeyCode Key = KeyCode::Unknown;
+        bool ShiftPressed = false;
+        bool CtrlPressed = false;
+        bool AltPressed = false;
+        bool SuperPressed = false;
+        bool CapsLockActive = false;
 
-        // Mouse events
         MouseCode Button = MouseCode::Button0;
         float MouseX = 0.0f;
         float MouseY = 0.0f;
@@ -43,8 +46,6 @@ namespace Lumina
         bool RecordsMouse = false;
 
         Recording() = default;
-        Recording(const std::string& name, bool recordMouse = false)
-            : Name(name), RecordsMouse(recordMouse) {
-        }
+        Recording(const std::string& name, bool recordMouse = false) : Name(name), RecordsMouse(recordMouse) {}
     };
 }
