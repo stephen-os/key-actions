@@ -27,30 +27,30 @@ namespace Lumina
         m_Events.clear();
     }
 
-    ImVec4 EventPanel::GetEventColor(ActionType action) const
+    ImVec4 EventPanel::GetEventColor(RecordedAction action) const
     {
         switch (action)
         {
-        case ActionType::KeyPressed:       return ImVec4(0.4f, 0.8f, 0.4f, 1.0f); // Green
-        case ActionType::KeyReleased:      return ImVec4(0.8f, 0.4f, 0.4f, 1.0f); // Red
-        case ActionType::MousePressed:     return ImVec4(0.4f, 0.6f, 0.9f, 1.0f); // Blue
-        case ActionType::MouseReleased:    return ImVec4(0.7f, 0.4f, 0.8f, 1.0f); // Purple
-        case ActionType::MouseMoved:       return ImVec4(0.6f, 0.6f, 0.6f, 1.0f); // Gray
-        case ActionType::MouseScrolled:    return ImVec4(0.9f, 0.7f, 0.4f, 1.0f); // Orange
+        case RecordedAction::KeyPressed:       return ImVec4(0.4f, 0.8f, 0.4f, 1.0f); // Green
+        case RecordedAction::KeyReleased:      return ImVec4(0.8f, 0.4f, 0.4f, 1.0f); // Red
+        case RecordedAction::MousePressed:     return ImVec4(0.4f, 0.6f, 0.9f, 1.0f); // Blue
+        case RecordedAction::MouseReleased:    return ImVec4(0.7f, 0.4f, 0.8f, 1.0f); // Purple
+        case RecordedAction::MouseMoved:       return ImVec4(0.6f, 0.6f, 0.6f, 1.0f); // Gray
+        case RecordedAction::MouseScrolled:    return ImVec4(0.9f, 0.7f, 0.4f, 1.0f); // Orange
         default:                           return ImVec4(1.0f, 1.0f, 1.0f, 1.0f); // White
         }
     }
 
-    const char* EventPanel::GetEventIcon(ActionType action) const
+    const char* EventPanel::GetEventIcon(RecordedAction action) const
     {
         switch (action)
         {
-        case ActionType::KeyPressed:       return "[KEY+]";
-        case ActionType::KeyReleased:      return "[KEY-]";
-        case ActionType::MousePressed:     return "[MOUSE+]";
-        case ActionType::MouseReleased:    return "[MOUSE-]";
-        case ActionType::MouseMoved:       return "[MOVE]";
-        case ActionType::MouseScrolled:    return "[SCROLL]";
+        case RecordedAction::KeyPressed:       return "[KEY+]";
+        case RecordedAction::KeyReleased:      return "[KEY-]";
+        case RecordedAction::MousePressed:     return "[MOUSE+]";
+        case RecordedAction::MouseReleased:    return "[MOUSE-]";
+        case RecordedAction::MouseMoved:       return "[MOVE]";
+        case RecordedAction::MouseScrolled:    return "[SCROLL]";
         default:                           return "[???]";
         }
     }
@@ -87,12 +87,12 @@ namespace Lumina
         std::string details;
         switch (event.Action)
         {
-        case ActionType::KeyPressed:
-        case ActionType::KeyReleased:
+        case RecordedAction::KeyPressed:
+        case RecordedAction::KeyReleased:
             details = Input::KeyCodeToString(event.Key);
             break;
-        case ActionType::MousePressed:
-        case ActionType::MouseReleased:
+        case RecordedAction::MousePressed:
+        case RecordedAction::MouseReleased:
         {
             std::stringstream ss;
             ss << "Button " << static_cast<int>(event.Button)
@@ -101,7 +101,7 @@ namespace Lumina
             details = ss.str();
             break;
         }
-        case ActionType::MouseMoved:
+        case RecordedAction::MouseMoved:
         {
             std::stringstream ss;
             ss << "(" << static_cast<int>(event.MouseX)
@@ -109,7 +109,7 @@ namespace Lumina
             details = ss.str();
             break;
         }
-        case ActionType::MouseScrolled:
+        case RecordedAction::MouseScrolled:
         {
             std::stringstream ss;
             ss << "dx=" << event.ScrollDX << ", dy=" << event.ScrollDY;

@@ -1,20 +1,20 @@
-// UI/RecordingTab.h
 #pragma once
 #include "Tab.h"
-
+#include "EventPanel.h"
 #include "Core/Recording.h"
-
+#include "Lumina/Input/GlobalInputCapture.h"
 #include <vector>
 #include <string>
+#include <memory>
 
 namespace Lumina
 {
-    class KeyPressedEvent;
-    class KeyReleasedEvent;
-    class MouseButtonPressedEvent;
-    class MouseButtonReleasedEvent;
-    class MouseMovedEvent;
-    class MouseScrolledEvent;
+    class GlobalKeyPressedEvent;
+    class GlobalKeyReleasedEvent;
+    class GlobalMouseButtonPressedEvent;
+    class GlobalMouseButtonReleasedEvent;
+    class GlobalMouseMovedEvent;
+    class GlobalMouseScrolledEvent;
 
     class RecordingTab : public Tab
     {
@@ -30,17 +30,18 @@ namespace Lumina
     private:
         void StartRecording();
         void StopRecording();
-        void ClearConsole();
-        void AddConsoleMessage(const std::string& message);
 
-        bool OnKeyPressed(KeyPressedEvent& e);
-        bool OnKeyReleased(KeyReleasedEvent& e);
-        bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
-        bool OnMouseButtonReleased(MouseButtonReleasedEvent& e);
-        bool OnMouseMoved(MouseMovedEvent& e);
-        bool OnMouseScrolled(MouseScrolledEvent& e);
+        bool OnGlobalKeyPressed(GlobalKeyPressedEvent& e);
+        bool OnGlobalKeyReleased(GlobalKeyReleasedEvent& e);
+        bool OnGlobalMouseButtonPressed(GlobalMouseButtonPressedEvent& e);
+        bool OnGlobalMouseButtonReleased(GlobalMouseButtonReleasedEvent& e);
+        bool OnGlobalMouseMoved(GlobalMouseMovedEvent& e);
+        bool OnGlobalMouseScrolled(GlobalMouseScrolledEvent& e);
 
     private:
+        // Global input system
+        std::unique_ptr<GlobalInputCapture> m_GlobalInputCapture;
+
         // UI State
         char m_RecordingName[256] = "";
         bool m_RecordMouseMovement = false;
@@ -54,9 +55,8 @@ namespace Lumina
         bool m_IsWaitingForDelay = false;
         Recording m_CurrentRecording;
 
-        // Console
-        std::vector<std::string> m_ConsoleMessages;
-        int m_MaxConsoleMessages = 1000;
+        // Event panel for displaying recorded events
+        EventPanel m_EventPanel;
 
         // Mouse tracking
         float m_LastMouseMoveTime = 0.0f;

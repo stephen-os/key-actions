@@ -30,8 +30,8 @@ namespace Lumina
         bool CapsLockActive = false;
 
         MouseCode Button = MouseCode::Button0;
-        float MouseX = 0.0f;
-        float MouseY = 0.0f;
+        int MouseX = 0;
+        int MouseY = 0;
         int ScrollDX = 0;
         int ScrollDY = 0;
 

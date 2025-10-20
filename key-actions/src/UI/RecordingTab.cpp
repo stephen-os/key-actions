@@ -1,30 +1,41 @@
 #include "RecordingTab.h"
-
-#include "Utils/Serialization.h"
-
+#include "Core/Serialization.h"
 #include "Lumina/Core/Application.h"
 #include "Lumina/Core/Input.h"
 #include "Lumina/Core/Log.h"
-#include "Lumina/Events/KeyEvent.h"
-#include "Lumina/Events/MouseEvent.h"
+#include "Lumina/Events/GlobalKeyEvent.h"
+#include "Lumina/Events/GlobalMouseEvent.h"
 #include <cstring>
 
 namespace Lumina
 {
     RecordingTab::RecordingTab()
-        : Tab("Recording")
+        : Tab("Recording"), m_EventPanel(1000)
     {
     }
 
     void RecordingTab::OnAttach()
     {
-        AddConsoleMessage("Recording tab initialized.");
+        // Create global input system
+        m_GlobalInputCapture = GlobalInputCapture::Create();
+
+        if (!m_GlobalInputCapture)
+        {
+            LUMINA_LOG_ERROR("Failed to create GlobalInput - platform not supported");
+        }
+
+        LUMINA_LOG_INFO("Recording tab initialized");
     }
 
     void RecordingTab::OnDetach()
     {
         if (m_IsRecording)
             StopRecording();
+
+        if (m_GlobalInputCapture && m_GlobalInputCapture->IsActive())
+        {
+            m_GlobalInputCapture->Stop();
+        }
     }
 
     void RecordingTab::OnUpdate(float timestep)
@@ -37,7 +48,12 @@ namespace Lumina
                 m_IsWaitingForDelay = false;
                 m_IsRecording = true;
                 m_RecordingStartTime = Application::GetTime();
-                AddConsoleMessage("Recording started!");
+
+                RecordedEvent event;
+                event.Action = RecordedAction::KeyPressed;
+                event.Time = 0.0f;
+                event.Key = KeyCode::Unknown;
+                LUMINA_LOG_INFO("Recording started!");
             }
         }
     }
@@ -48,35 +64,40 @@ namespace Lumina
             return;
 
         EventDispatcher dispatcher(e);
-        dispatcher.Dispatch<KeyPressedEvent>([this](KeyPressedEvent& event) {
-            return OnKeyPressed(event);
+
+        // Handle global events
+        dispatcher.Dispatch<GlobalKeyPressedEvent>([this](GlobalKeyPressedEvent& event) {
+            return OnGlobalKeyPressed(event);
             });
-        dispatcher.Dispatch<KeyReleasedEvent>([this](KeyReleasedEvent& event) {
-            return OnKeyReleased(event);
+
+        dispatcher.Dispatch<GlobalKeyReleasedEvent>([this](GlobalKeyReleasedEvent& event) {
+            return OnGlobalKeyReleased(event);
             });
-        dispatcher.Dispatch<MouseButtonPressedEvent>([this](MouseButtonPressedEvent& event) {
-            return OnMouseButtonPressed(event);
+
+        dispatcher.Dispatch<GlobalMouseButtonPressedEvent>([this](GlobalMouseButtonPressedEvent& event) {
+            return OnGlobalMouseButtonPressed(event);
             });
-        dispatcher.Dispatch<MouseButtonReleasedEvent>([this](MouseButtonReleasedEvent& event) {
-            return OnMouseButtonReleased(event);
+
+        dispatcher.Dispatch<GlobalMouseButtonReleasedEvent>([this](GlobalMouseButtonReleasedEvent& event) {
+            return OnGlobalMouseButtonReleased(event);
             });
 
         if (m_RecordMouseMovement)
         {
-            dispatcher.Dispatch<MouseMovedEvent>([this](MouseMovedEvent& event) {
-                return OnMouseMoved(event);
+            dispatcher.Dispatch<GlobalMouseMovedEvent>([this](GlobalMouseMovedEvent& event) {
+                return OnGlobalMouseMoved(event);
                 });
         }
 
-        dispatcher.Dispatch<MouseScrolledEvent>([this](MouseScrolledEvent& event) {
-            return OnMouseScrolled(event);
+        dispatcher.Dispatch<GlobalMouseScrolledEvent>([this](GlobalMouseScrolledEvent& event) {
+            return OnGlobalMouseScrolled(event);
             });
     }
 
     void RecordingTab::OnRender()
     {
-        ImGui::Begin(GetName().c_str());
-        // Left column - Controls
+		ImGui::Begin(GetName().c_str());
+
         ImGui::BeginChild("RecordControls", ImVec2(300, 0), true);
 
         ImGui::Text("Name of Recording:");
@@ -100,19 +121,28 @@ namespace Lumina
         ImGui::Separator();
         ImGui::Spacing();
 
-        ImGui::BeginDisabled(m_IsRecording || m_IsWaitingForDelay);
-        if (ImGui::Button("Start Recording", ImVec2(-1, 40)))
+        // Check if GlobalInput is available
+        if (!m_GlobalInputCapture)
         {
-            StartRecording();
+            ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f),
+                "Global input not available!");
         }
-        ImGui::EndDisabled();
+        else
+        {
+            ImGui::BeginDisabled(m_IsRecording || m_IsWaitingForDelay);
+            if (ImGui::Button("Start Recording", ImVec2(-1, 40)))
+            {
+                StartRecording();
+            }
+            ImGui::EndDisabled();
 
-        ImGui::BeginDisabled(!m_IsRecording && !m_IsWaitingForDelay);
-        if (ImGui::Button("Stop Recording", ImVec2(-1, 40)))
-        {
-            StopRecording();
+            ImGui::BeginDisabled(!m_IsRecording && !m_IsWaitingForDelay);
+            if (ImGui::Button("Stop Recording", ImVec2(-1, 40)))
+            {
+                StopRecording();
+            }
+            ImGui::EndDisabled();
         }
-        ImGui::EndDisabled();
 
         ImGui::Spacing();
 
@@ -131,30 +161,17 @@ namespace Lumina
 
         ImGui::SameLine();
 
-        // Right column - Console
-        ImGui::BeginChild("RecordConsole", ImVec2(0, 0), true);
+        // Right column - Event Panel
+        ImGui::BeginChild("RecordEventPanel", ImVec2(0, 0), true);
 
-        ImGui::Text("Console");
+        ImGui::Text("Recorded Events");
         ImGui::Separator();
 
-        ImGui::BeginChild("ConsoleMessages", ImVec2(0, -30), false, ImGuiWindowFlags_HorizontalScrollbar);
-        for (const auto& message : m_ConsoleMessages)
-        {
-            ImGui::TextUnformatted(message.c_str());
-        }
-
-        if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
-            ImGui::SetScrollHereY(1.0f);
+        m_EventPanel.Render(ImVec2(0, 0));
 
         ImGui::EndChild();
 
-        if (ImGui::Button("Clear Console", ImVec2(-1, 0)))
-        {
-            ClearConsole();
-        }
-
-        ImGui::EndChild();
-        ImGui::End(); 
+		ImGui::End();
     }
 
     void RecordingTab::StartRecording()
@@ -164,23 +181,41 @@ namespace Lumina
         if (strlen(m_RecordingName) == 0)
         {
             m_ShowNameError = true;
-            AddConsoleMessage("Error: Recording name cannot be blank!");
+            LUMINA_LOG_WARN("Recording name cannot be blank!");
             return;
         }
 
+        if (!m_GlobalInputCapture)
+        {
+            LUMINA_LOG_ERROR("GlobalInput not available!");
+            return;
+        }
+
+        // Clear previous recording
+        m_EventPanel.Clear();
         m_CurrentRecording = Recording(m_RecordingName, m_RecordMouseMovement);
+
+        // Enable event posting to application
+        m_GlobalInputCapture->SetPostEventsToApplication(true);
+
+        // Start global input capture
+        if (!m_GlobalInputCapture->Start())
+        {
+            LUMINA_LOG_ERROR("Failed to start global input capture");
+            return;
+        }
 
         if (m_InitialDelay > 0)
         {
             m_IsWaitingForDelay = true;
             m_DelayTimer = static_cast<float>(m_InitialDelay);
-            AddConsoleMessage("Starting recording with " + std::to_string(m_InitialDelay) + " second delay...");
+            LUMINA_LOG_INFO("Starting recording with {} second delay...", m_InitialDelay);
         }
         else
         {
             m_IsRecording = true;
             m_RecordingStartTime = Application::GetTime();
-            AddConsoleMessage("Recording started!");
+            LUMINA_LOG_INFO("Recording started!");
         }
     }
 
@@ -189,134 +224,134 @@ namespace Lumina
         if (m_IsWaitingForDelay)
         {
             m_IsWaitingForDelay = false;
-            AddConsoleMessage("Recording cancelled.");
+            LUMINA_LOG_INFO("Recording cancelled");
             return;
         }
 
         m_IsRecording = false;
         m_CurrentRecording.TotalDuration = Application::GetTime() - m_RecordingStartTime;
 
-        AddConsoleMessage("Recording stopped. Duration: " + std::to_string(m_CurrentRecording.TotalDuration) + "s");
-        AddConsoleMessage("Total events: " + std::to_string(m_CurrentRecording.Events.size()));
+        // Stop global input
+        if (m_GlobalInputCapture)
+        {
+            m_GlobalInputCapture->Stop();
+        }
+
+        LUMINA_LOG_INFO("Recording stopped. Duration: {}s", m_CurrentRecording.TotalDuration);
+        LUMINA_LOG_INFO("Total events: {}", m_CurrentRecording.Events.size());
 
         if (Serialization::SaveRecording(m_CurrentRecording))
         {
-            AddConsoleMessage("Recording saved successfully!");
+            LUMINA_LOG_INFO("Recording saved successfully!");
         }
         else
         {
-            AddConsoleMessage("Error: Failed to save recording!");
+            LUMINA_LOG_ERROR("Failed to save recording!");
         }
     }
 
-    void RecordingTab::ClearConsole()
+    bool RecordingTab::OnGlobalKeyPressed(GlobalKeyPressedEvent& e)
     {
-        m_ConsoleMessages.clear();
-    }
-
-    void RecordingTab::AddConsoleMessage(const std::string& message)
-    {
-        m_ConsoleMessages.push_back(message);
-
-        if (m_ConsoleMessages.size() > m_MaxConsoleMessages)
-        {
-            m_ConsoleMessages.erase(m_ConsoleMessages.begin());
-        }
-    }
-
-    bool RecordingTab::OnKeyPressed(KeyPressedEvent& e)
-    {
-        if (e.IsRepeat()) return false;
-
         RecordedEvent event;
-        event.Action = ActionType::KeyPressed;
+        event.Action = RecordedAction::KeyPressed;
         event.Time = Application::GetTime() - m_RecordingStartTime;
         event.Key = e.GetKeyCode();
 
+        // Capture modifier states
+        event.ShiftPressed = Input::IsShiftPressed();
+        event.CtrlPressed = Input::IsCtrlPressed();
+        event.AltPressed = Input::IsAltPressed();
+        event.SuperPressed = Input::IsSuperPressed();
+        event.CapsLockActive = Input::IsCapsLockActive();
+
         m_CurrentRecording.Events.push_back(event);
-        AddConsoleMessage(event.ToString());
+        m_EventPanel.AddEvent(event);
 
         return false;
     }
 
-    bool RecordingTab::OnKeyReleased(KeyReleasedEvent& e)
+    bool RecordingTab::OnGlobalKeyReleased(GlobalKeyReleasedEvent& e)
     {
         RecordedEvent event;
-        event.Action = ActionType::KeyReleased;
+        event.Action = RecordedAction::KeyReleased;
         event.Time = Application::GetTime() - m_RecordingStartTime;
         event.Key = e.GetKeyCode();
 
+        // Capture modifier states
+        event.ShiftPressed = Input::IsShiftPressed();
+        event.CtrlPressed = Input::IsCtrlPressed();
+        event.AltPressed = Input::IsAltPressed();
+        event.SuperPressed = Input::IsSuperPressed();
+        event.CapsLockActive = Input::IsCapsLockActive();
+
         m_CurrentRecording.Events.push_back(event);
-        AddConsoleMessage(event.ToString());
+        m_EventPanel.AddEvent(event);
 
         return false;
     }
 
-    bool RecordingTab::OnMouseButtonPressed(MouseButtonPressedEvent& e)
+    bool RecordingTab::OnGlobalMouseButtonPressed(GlobalMouseButtonPressedEvent& e)
     {
-        auto [x, y] = Input::GetMousePosition();
-
         RecordedEvent event;
-        event.Action = ActionType::MousePressed;
+        event.Action = RecordedAction::MousePressed;
         event.Time = Application::GetTime() - m_RecordingStartTime;
         event.Button = e.GetMouseButton();
-        event.MouseX = x;
-        event.MouseY = y;
+        event.MouseX = e.GetX();
+        event.MouseY = e.GetY();
 
         m_CurrentRecording.Events.push_back(event);
-        AddConsoleMessage(event.ToString());
+        m_EventPanel.AddEvent(event);
 
         return false;
     }
 
-    bool RecordingTab::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
+    bool RecordingTab::OnGlobalMouseButtonReleased(GlobalMouseButtonReleasedEvent& e)
     {
-        auto [x, y] = Input::GetMousePosition();
-
         RecordedEvent event;
-        event.Action = ActionType::MouseReleased;
+        event.Action = RecordedAction::MouseReleased;
         event.Time = Application::GetTime() - m_RecordingStartTime;
         event.Button = e.GetMouseButton();
-        event.MouseX = x;
-        event.MouseY = y;
+        event.MouseX = e.GetX();
+        event.MouseY = e.GetY();
 
         m_CurrentRecording.Events.push_back(event);
-        AddConsoleMessage(event.ToString());
+        m_EventPanel.AddEvent(event);
 
         return false;
     }
 
-    bool RecordingTab::OnMouseMoved(MouseMovedEvent& e)
+    bool RecordingTab::OnGlobalMouseMoved(GlobalMouseMovedEvent& e)
     {
         float currentTime = Application::GetTime();
 
+        // Throttle mouse moves
         if (currentTime - m_LastMouseMoveTime < m_MouseMoveThreshold)
             return false;
 
         m_LastMouseMoveTime = currentTime;
 
         RecordedEvent event;
-        event.Action = ActionType::MouseMoved;
+        event.Action = RecordedAction::MouseMoved;
         event.Time = currentTime - m_RecordingStartTime;
-        event.MouseX = e.GetX();
-        event.MouseY = e.GetY();
+        event.MouseX = static_cast<float>(e.GetX());
+        event.MouseY = static_cast<float>(e.GetY());
 
         m_CurrentRecording.Events.push_back(event);
-        AddConsoleMessage(event.ToString());
+        m_EventPanel.AddEvent(event);
 
         return false;
     }
 
-    bool RecordingTab::OnMouseScrolled(MouseScrolledEvent& e)
+    bool RecordingTab::OnGlobalMouseScrolled(GlobalMouseScrolledEvent& e)
     {
         RecordedEvent event;
-        event.Action = ActionType::MouseScrolled;
+        event.Action = RecordedAction::MouseScrolled;
         event.Time = Application::GetTime() - m_RecordingStartTime;
-        event.ScrollDX = static_cast<int>(e.GetXOffset());
-        event.ScrollDY = static_cast<int>(e.GetYOffset());
+        event.ScrollDX = e.GetDX();
+        event.ScrollDY = e.GetDY();
 
         m_CurrentRecording.Events.push_back(event);
-        AddConsoleMessage(event.ToString());
+        m_EventPanel.AddEvent(event);
 
         return false;
     }

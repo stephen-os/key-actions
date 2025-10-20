@@ -40,22 +40,22 @@ namespace Lumina
                 eventJson["action"] = static_cast<int>(event.Action);
                 eventJson["time"] = event.Time;
 
-                if (event.Action == ActionType::KeyPressed || event.Action == ActionType::KeyReleased)
+                if (event.Action == RecordedAction::KeyPressed || event.Action == RecordedAction::KeyReleased)
                 {
                     eventJson["key"] = static_cast<int>(event.Key);
                 }
-                else if (event.Action == ActionType::MousePressed || event.Action == ActionType::MouseReleased)
+                else if (event.Action == RecordedAction::MousePressed || event.Action == RecordedAction::MouseReleased)
                 {
                     eventJson["button"] = static_cast<int>(event.Button);
                     eventJson["x"] = event.MouseX;
                     eventJson["y"] = event.MouseY;
                 }
-                else if (event.Action == ActionType::MouseMoved)
+                else if (event.Action == RecordedAction::MouseMoved)
                 {
                     eventJson["x"] = event.MouseX;
                     eventJson["y"] = event.MouseY;
                 }
-                else if (event.Action == ActionType::MouseScrolled)
+                else if (event.Action == RecordedAction::MouseScrolled)
                 {
                     eventJson["dx"] = event.ScrollDX;
                     eventJson["dy"] = event.ScrollDY;
@@ -103,25 +103,25 @@ namespace Lumina
             for (const auto& eventJson : j["events"])
             {
                 RecordedEvent event;
-                event.Action = static_cast<ActionType>(eventJson["action"]);
+                event.Action = static_cast<RecordedAction>(eventJson["action"]);
                 event.Time = eventJson["time"];
 
-                if (event.Action == ActionType::KeyPressed || event.Action == ActionType::KeyReleased)
+                if (event.Action == RecordedAction::KeyPressed || event.Action == RecordedAction::KeyReleased)
                 {
                     event.Key = static_cast<KeyCode>(eventJson["key"]);
                 }
-                else if (event.Action == ActionType::MousePressed || event.Action == ActionType::MouseReleased)
+                else if (event.Action == RecordedAction::MousePressed || event.Action == RecordedAction::MouseReleased)
                 {
                     event.Button = static_cast<MouseCode>(eventJson["button"]);
                     event.MouseX = eventJson["x"];
                     event.MouseY = eventJson["y"];
                 }
-                else if (event.Action == ActionType::MouseMoved)
+                else if (event.Action == RecordedAction::MouseMoved)
                 {
                     event.MouseX = eventJson["x"];
                     event.MouseY = eventJson["y"];
                 }
-                else if (event.Action == ActionType::MouseScrolled)
+                else if (event.Action == RecordedAction::MouseScrolled)
                 {
                     event.ScrollDX = eventJson["dx"];
                     event.ScrollDY = eventJson["dy"];

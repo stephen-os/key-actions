@@ -1,6 +1,7 @@
 #include "KeyActionsLayer.h"
 
 #include "UI/RecordingTab.h"
+#include "UI/PlaybackTab.h"
 #include "UI/SettingsTab.h"
 
 #include "Lumina/Core/Log.h"
@@ -11,11 +12,13 @@ namespace Lumina
 
     void KeyActionsLayer::OnAttach()
     {
-        auto recordingTab = std::make_shared<RecordingTab>();
+		auto recordingTab = std::make_shared<RecordingTab>();
         auto settingsTab = std::make_shared<SettingsTab>();
+		auto playbackTab = std::make_shared<PlaybackTab>();
 
         m_Tabs.push_back(recordingTab);
 		m_Tabs.push_back(settingsTab);
+        m_Tabs.push_back(playbackTab);
 
         // Initialize all tabs
         for (auto& tab : m_Tabs)
@@ -25,7 +28,8 @@ namespace Lumina
 
         DockWindowSplit(recordingTab->GetName(), DockPosition::Center);
 
-        DockWindowTabbed(settingsTab->GetName(), recordingTab->GetName());
+		DockWindowTabbed(settingsTab->GetName(), recordingTab->GetName());
+		DockWindowTabbed(playbackTab->GetName(), recordingTab->GetName());
 
         LUMINA_LOG_INFO("KeyActions layer attached with {} tabs", m_Tabs.size());
     }
@@ -65,4 +69,4 @@ namespace Lumina
             tab->OnRender();
         }
     }
-}
+} 

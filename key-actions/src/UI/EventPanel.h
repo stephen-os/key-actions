@@ -1,7 +1,9 @@
 #pragma once
+
 #include <vector>
 #include <imgui.h>
-#include "../Core/Recording.h"
+
+#include "Core/Recording.h"
 
 namespace Lumina
 {
@@ -18,8 +20,8 @@ namespace Lumina
 
     private:
         void RenderEvent(const RecordedEvent& event, int index);
-        ImVec4 GetEventColor(ActionType action) const;
-        const char* GetEventIcon(ActionType action) const;
+        ImVec4 GetEventColor(RecordedAction action) const;
+        const char* GetEventIcon(RecordedAction action) const;
 
     private:
         std::vector<RecordedEvent> m_Events;
