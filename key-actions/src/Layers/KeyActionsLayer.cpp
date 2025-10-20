@@ -44,19 +44,23 @@ namespace Lumina
 
     void KeyActionsLayer::OnEvent(Event& e)
     {
-        // Forward events to all tabs
         for (auto& tab : m_Tabs)
         {
-            tab->OnEvent(e);
+            if (tab->IsVisible())
+            {
+                tab->OnEvent(e);
+            }
         }
     }
 
     void KeyActionsLayer::OnUpdate(float timestep)
     {
-        // Update all tabs
         for (auto& tab : m_Tabs)
         {
-            tab->OnUpdate(timestep);
+            if (tab->IsVisible())
+            {
+                tab->OnUpdate(timestep);
+            }
         }
     }
 
