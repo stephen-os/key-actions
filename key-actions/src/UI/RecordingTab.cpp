@@ -89,8 +89,6 @@ namespace Lumina
 
     void RecordingTab::OnRender()
     {
-        ImGui::Begin(GetName().c_str());
-
         // Left column - Controls
         ImGui::BeginChild("RecordControls", ImVec2(300, 0), true);
 
@@ -158,8 +156,6 @@ namespace Lumina
         m_EventPanel.Render(ImVec2(0, 0));
 
         ImGui::EndChild();
-
-        ImGui::End();
     }
 
     void RecordingTab::StartRecording()

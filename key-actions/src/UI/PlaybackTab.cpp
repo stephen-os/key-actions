@@ -45,8 +45,6 @@ namespace Lumina
 
     void PlaybackTab::OnRender()
     {
-		ImGui::Begin(GetName().c_str());
-
         // Recording selection
         ImGui::Text("Available Recordings:");
 
@@ -174,8 +172,6 @@ namespace Lumina
 
         // Stats
         ImGui::Text("Total Plays: %d", m_TotalPlays);
-
-        ImGui::End(); 
     }
 
     void PlaybackTab::LoadRecordingsList()

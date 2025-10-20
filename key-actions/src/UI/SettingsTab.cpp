@@ -28,8 +28,5 @@ namespace Lumina
 
     void SettingsTab::OnRender()
     {
-        ImGui::Begin(GetName().c_str());
-        ImGui::End();
-        // Settings content will go here
     }
 }

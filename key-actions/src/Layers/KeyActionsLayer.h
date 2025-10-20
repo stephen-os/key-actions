@@ -22,5 +22,7 @@ namespace Lumina
 
     private:
         std::vector<std::shared_ptr<Tab>> m_Tabs;
+
+		size_t m_ActiveTabIndex = 0;
     };
 } 

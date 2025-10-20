@@ -12,24 +12,22 @@ namespace Lumina
 
     void KeyActionsLayer::OnAttach()
     {
-		auto recordingTab = std::make_shared<RecordingTab>();
+        auto recordingTab = std::make_shared<RecordingTab>();
+        auto playbackTab = std::make_shared<PlaybackTab>();
         auto settingsTab = std::make_shared<SettingsTab>();
-		auto playbackTab = std::make_shared<PlaybackTab>();
 
         m_Tabs.push_back(recordingTab);
-		m_Tabs.push_back(settingsTab);
         m_Tabs.push_back(playbackTab);
+        m_Tabs.push_back(settingsTab);
 
-        // Initialize all tabs
         for (auto& tab : m_Tabs)
         {
             tab->OnAttach();
         }
-
-        DockWindowSplit(recordingTab->GetName(), DockPosition::Center);
-
-		DockWindowTabbed(settingsTab->GetName(), recordingTab->GetName());
-		DockWindowTabbed(playbackTab->GetName(), recordingTab->GetName());
+        
+        recordingTab->Show();
+        playbackTab->Hide();
+        settingsTab->Hide();
 
         LUMINA_LOG_INFO("KeyActions layer attached with {} tabs", m_Tabs.size());
     }
@@ -64,9 +62,43 @@ namespace Lumina
 
     void KeyActionsLayer::OnUIRender()
     {
+        if (ImGui::BeginMainMenuBar())
+        {
+            for (size_t i = 0; i < m_Tabs.size(); i++)
+            {
+                bool isActive = (m_ActiveTabIndex == i);
+
+                if (isActive)
+                {
+                    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.5f, 0.0f, 1.0f));
+                }
+
+                if (ImGui::Button(m_Tabs[i]->GetName().c_str()))
+                {
+                    m_ActiveTabIndex = i;
+                    for (size_t j = 0; j < m_Tabs.size(); j++)
+                    {
+                        if (j == m_ActiveTabIndex)
+                            m_Tabs[j]->SetVisible(true);
+                        else
+                            m_Tabs[j]->SetVisible(false);
+					}   
+                }
+
+                if (isActive)
+                {
+                    ImGui::PopStyleColor();
+                }
+            }
+            ImGui::EndMainMenuBar();
+        }
+
         for (auto& tab : m_Tabs)
         {
-            tab->OnRender();
+            if (tab->IsVisible())
+            {
+                tab->OnRender();
+            }
         }
     }
 } 

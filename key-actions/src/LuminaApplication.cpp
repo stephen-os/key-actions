@@ -9,6 +9,7 @@ Lumina::Application* Lumina::CreateApplication(int argc, char** argv)
     spec.Name = "Key Actions";
     spec.Width = 900;
     spec.Height = 900;
+	spec.EnableDocking = false;
     
     Lumina::Application* app = new Lumina::Application(spec);
 	app->PushLayer<KeyActionsLayer>();

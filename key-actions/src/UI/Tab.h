@@ -1,5 +1,4 @@
 #pragma once
-
 #include <string>
 #include <imgui.h>
 
@@ -21,7 +20,13 @@ namespace Lumina
 
         const std::string& GetName() const { return m_Name; }
 
+        void Show() { m_IsVisible = true; }
+        void Hide() { m_IsVisible = false; }
+        bool IsVisible() const { return m_IsVisible; }
+        void SetVisible(bool visible) { m_IsVisible = visible; }
+
     protected:
         std::string m_Name;
+        bool m_IsVisible = true;
     };
 }
