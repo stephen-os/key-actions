@@ -4,6 +4,8 @@
 #include "UI/PlaybackTab.h"
 #include "UI/SettingsTab.h"
 
+#include "Core/Settings.h"
+
 #include "Lumina/Core/Log.h"
 
 namespace Lumina
@@ -12,6 +14,8 @@ namespace Lumina
 
     void KeyActionsLayer::OnAttach()
     {
+        Settings::Init();
+
         auto recordingTab = std::make_shared<RecordingTab>();
         auto playbackTab = std::make_shared<PlaybackTab>();
         auto settingsTab = std::make_shared<SettingsTab>();
@@ -38,6 +42,8 @@ namespace Lumina
         {
             tab->OnDetach();
         }
+
+        Settings::Shutdown();
 
         LUMINA_LOG_INFO("KeyActions layer detached");
     }

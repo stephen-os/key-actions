@@ -1,6 +1,9 @@
-// UI/SettingsTab.h
 #pragma once
 #include "Tab.h"
+#include "Core/Settings.h"
+#include "Lumina/Core/Input.h"
+#include <string>
+#include <vector>
 
 namespace Lumina
 {
@@ -8,14 +11,25 @@ namespace Lumina
     {
     public:
         SettingsTab();
+        virtual ~SettingsTab() = default;
 
-        virtual void OnAttach() override;
-        virtual void OnDetach() override;
-        virtual void OnUpdate(float timestep) override;
-        virtual void OnEvent(Event& e) override;
-        virtual void OnRender() override;
+        void OnAttach() override;
+        void OnDetach() override;
+        void OnUpdate(float timestep) override;
+        void OnEvent(Event& e) override;
+        void OnRender() override;
 
     private:
-        // Settings state will go here
+        char m_RecordingsFolderBuffer[512];
+        int m_AutoSaveIntervalBuffer;
+        bool m_AutoSaveEnabledBuffer;
+
+        bool m_CapturingStartRecording = false;
+        bool m_CapturingStopRecording = false;
+        bool m_CapturingPlayRecording = false;
+        bool m_CapturingStopPlayback = false;
+
+        std::vector<KeyCode> m_CapturedKeys;
+        std::string m_ValidationError;
     };
 }
