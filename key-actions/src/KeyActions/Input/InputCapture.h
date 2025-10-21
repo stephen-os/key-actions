@@ -1,5 +1,7 @@
 #pragma once
-#include "Core/Recording.h"
+
+#include "KeyActions/Core/Recording.h"
+
 #include <functional>
 #include <memory>
 

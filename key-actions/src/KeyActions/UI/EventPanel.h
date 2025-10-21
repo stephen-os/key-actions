@@ -3,7 +3,7 @@
 #include <vector>
 #include <imgui.h>
 
-#include "Core/Recording.h"
+#include "KeyActions/Core/Recording.h"
 
 namespace Lumina
 {

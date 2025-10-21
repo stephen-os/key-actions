@@ -1,9 +1,9 @@
 #pragma once
 #include "Tab.h"
 
-#include "Core/Recording.h"
-#include "Core/PlaybackSession.h"
-#include "Core/Serialization.h"
+#include "KeyActions/Core/Recording.h"
+#include "KeyActions/Core/PlaybackSession.h"
+#include "KeyActions/Core/Serialization.h"
 
 #include <vector>
 #include <string>

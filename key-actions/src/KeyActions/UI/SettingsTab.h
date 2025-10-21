@@ -1,6 +1,6 @@
 #pragma once
 #include "Tab.h"
-#include "Core/Settings.h"
+#include "KeyActions/Core/Settings.h"
 #include "Lumina/Core/Input.h"
 #include <string>
 #include <vector>

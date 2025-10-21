@@ -1,10 +1,10 @@
 #include "KeyActionsLayer.h"
 
-#include "UI/RecordingTab.h"
-#include "UI/PlaybackTab.h"
-#include "UI/SettingsTab.h"
+#include "KeyActions/UI/RecordingTab.h"
+#include "KeyActions/UI/PlaybackTab.h"
+#include "KeyActions/UI/SettingsTab.h"
 
-#include "Core/Settings.h"
+#include "KeyActions/Core/Settings.h"
 
 #include "Lumina/Core/Log.h"
 

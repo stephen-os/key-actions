@@ -1,7 +1,7 @@
 #include "Lumina/Core/Application.h"
 #include "Lumina/Core/EntryPoint.h"
 
-#include "Layers/KeyActionsLayer.h"
+#include "KeyActions/Layers/KeyActionsLayer.h"
 
 Lumina::Application* Lumina::CreateApplication(int argc, char** argv)
 {

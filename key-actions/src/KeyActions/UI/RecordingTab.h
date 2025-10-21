@@ -1,8 +1,8 @@
 #pragma once
 #include "Tab.h"
 #include "EventPanel.h"
-#include "Core/RecordingSession.h"
-#include "Core/Serialization.h"
+#include "KeyActions/Core/RecordingSession.h"
+#include "KeyActions/Core/Serialization.h"
 
 namespace Lumina
 {
