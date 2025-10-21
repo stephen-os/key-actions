@@ -1,23 +1,18 @@
 #include "SettingsTab.h"
-
 #include "Lumina/Core/Log.h"
-
 #include "Lumina/Events/WindowKeyEvent.h"
-
-#include <cstring>
+#include <ImGuiFileDialog.h>
 
 namespace Lumina
 {
-    SettingsTab::SettingsTab() : Tab("Settings") {}
+    SettingsTab::SettingsTab()
+        : Tab("Settings")
+    {
+    }
 
     void SettingsTab::OnAttach()
     {
         const auto& data = Settings::Data();
-
-        std::string folderPath = data.RecordingsFolder.string();
-        strncpy(m_RecordingsFolderBuffer, folderPath.c_str(), sizeof(m_RecordingsFolderBuffer) - 1);
-        m_RecordingsFolderBuffer[sizeof(m_RecordingsFolderBuffer) - 1] = '\0';
-
         m_AutoSaveIntervalBuffer = data.AutoSaveIntervalSeconds;
         m_AutoSaveEnabledBuffer = data.AutoSaveEnabled;
 
@@ -100,7 +95,6 @@ namespace Lumina
                         m_CapturingStopPlayback = false;
                     }
 
-                    
                     m_CapturedKeys.clear();
                 }
                 return true;
@@ -266,26 +260,31 @@ namespace Lumina
         ImGui::Spacing();
 
         ImGui::Text("Recordings Folder:");
-        if (ImGui::InputText("##RecordingsFolder", m_RecordingsFolderBuffer, sizeof(m_RecordingsFolderBuffer)))
+        ImGui::Text("%s", settings.RecordingsFolder.string().c_str());
+
+        if (ImGui::Button("Browse...", ImVec2(150, 0)))
         {
-            settings.RecordingsFolder = m_RecordingsFolderBuffer;
+            IGFD::FileDialogConfig config;
+            config.path = settings.RecordingsFolder.string();
+            config.flags = ImGuiFileDialogFlags_Modal;
+            ImGuiFileDialog::Instance()->OpenDialog("ChooseRecordingsFolder", "Choose Recordings Folder", nullptr, config);
+        }
+        
+        if (ImGuiFileDialog::Instance()->Display("ChooseRecordingsFolder", ImGuiWindowFlags_NoResize, { 500, 300 }, { 500, 300 }))
+        {
+            if (ImGuiFileDialog::Instance()->IsOk())
+            {
+                std::string folderPath = ImGuiFileDialog::Instance()->GetFilePathName();
+                settings.RecordingsFolder = folderPath;
+            }
+            ImGuiFileDialog::Instance()->Close();
         }
 
-        ValidationResult folderValidation = Settings::ValidateRecordingsFolder(settings.RecordingsFolder);
-        if (!folderValidation.IsValid)
+        if (!std::filesystem::exists(settings.RecordingsFolder))
         {
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-            ImGui::Text("%s", folderValidation.ErrorMessage.c_str());
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.8f, 0.0f, 1.0f));
+            ImGui::Text("Warning: Directory does not exist. It will be created when saving.");
             ImGui::PopStyleColor();
-
-            ImGui::SameLine();
-            if (ImGui::Button("Revert##Folder"))
-            {
-                Settings::RevertRecordingsFolder();
-                std::string folderPath = settings.RecordingsFolder.string();
-                strncpy(m_RecordingsFolderBuffer, folderPath.c_str(), sizeof(m_RecordingsFolderBuffer) - 1);
-                m_RecordingsFolderBuffer[sizeof(m_RecordingsFolderBuffer) - 1] = '\0';
-            }
         }
 
         ImGui::Spacing();
@@ -301,27 +300,11 @@ namespace Lumina
             settings.AutoSaveIntervalSeconds = m_AutoSaveIntervalBuffer;
         }
 
-        ValidationResult intervalValidation = Settings::ValidateAutoSaveInterval(settings.AutoSaveIntervalSeconds);
-        if (!intervalValidation.IsValid)
-        {
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-            ImGui::Text("%s", intervalValidation.ErrorMessage.c_str());
-            ImGui::PopStyleColor();
-
-            ImGui::SameLine();
-            if (ImGui::Button("Revert##Interval"))
-            {
-                Settings::RevertAutoSaveInterval();
-                m_AutoSaveIntervalBuffer = settings.AutoSaveIntervalSeconds;
-            }
-        }
-
         ImGui::Spacing();
         ImGui::Separator();
         ImGui::Spacing();
 
         bool hasChanges = Settings::IsModified();
-        bool isValid = Settings::IsValid();
 
         if (hasChanges)
         {
@@ -330,7 +313,7 @@ namespace Lumina
             ImGui::PopStyleColor();
         }
 
-        ImGui::BeginDisabled(!hasChanges || !isValid);
+        ImGui::BeginDisabled(!hasChanges);
         if (ImGui::Button("Save Settings", ImVec2(150, 40)))
         {
             if (Settings::Save())
@@ -351,12 +334,9 @@ namespace Lumina
         ImGui::BeginDisabled(!hasChanges);
         if (ImGui::Button("Revert All", ImVec2(150, 40)))
         {
-            Settings::RevertAll();
+            Settings::Load();
 
             const auto& data = Settings::Data();
-            std::string folderPath = data.RecordingsFolder.string();
-            strncpy(m_RecordingsFolderBuffer, folderPath.c_str(), sizeof(m_RecordingsFolderBuffer) - 1);
-            m_RecordingsFolderBuffer[sizeof(m_RecordingsFolderBuffer) - 1] = '\0';
             m_AutoSaveIntervalBuffer = data.AutoSaveIntervalSeconds;
             m_AutoSaveEnabledBuffer = data.AutoSaveEnabled;
 

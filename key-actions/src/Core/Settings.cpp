@@ -36,9 +36,7 @@ namespace Lumina
         bool result = s_Instance->LoadFromJson();
         if (result)
         {
-            s_Instance->m_ValidData = s_Instance->m_CurrentData;
             s_Instance->m_SavedData = s_Instance->m_CurrentData;
-            s_Instance->m_Modified = false;
         }
 
         return result;
@@ -48,16 +46,10 @@ namespace Lumina
     {
         LUMINA_ASSERT(s_Instance != nullptr, "Settings not initialized! Call Settings::Init() first.");
 
-        ValidationResult validation = s_Instance->ValidateInternal();
-        if (!validation.IsValid)
-            return false;
-
         bool result = s_Instance->SaveToJson();
         if (result)
         {
-            s_Instance->m_ValidData = s_Instance->m_CurrentData;
             s_Instance->m_SavedData = s_Instance->m_CurrentData;
-            s_Instance->m_Modified = false;
         }
 
         return result;
@@ -72,110 +64,13 @@ namespace Lumina
     SettingsData& Settings::GetMutable()
     {
         LUMINA_ASSERT(s_Instance != nullptr, "Settings not initialized! Call Settings::Init() first.");
-        s_Instance->m_Modified = true;
         return s_Instance->m_CurrentData;
     }
 
     bool Settings::IsModified()
     {
         LUMINA_ASSERT(s_Instance != nullptr, "Settings not initialized! Call Settings::Init() first.");
-        return s_Instance->m_Modified && (s_Instance->m_CurrentData != s_Instance->m_SavedData);
-    }
-
-    bool Settings::IsValid()
-    {
-        LUMINA_ASSERT(s_Instance != nullptr, "Settings not initialized! Call Settings::Init() first.");
-        return s_Instance->ValidateInternal().IsValid;
-    }
-
-    ValidationResult Settings::Validate()
-    {
-        LUMINA_ASSERT(s_Instance != nullptr, "Settings not initialized! Call Settings::Init() first.");
-        return s_Instance->ValidateInternal();
-    }
-
-    ValidationResult Settings::ValidateRecordingsFolder(const std::filesystem::path& path)
-    {
-        ValidationResult result;
-
-        if (path.empty())
-        {
-            result.IsValid = false;
-            result.ErrorMessage = "Recordings folder path cannot be empty";
-            return result;
-        }
-
-        std::string pathString = path.string();
-        const std::string invalidChars = "<>:\"|?*";
-
-        for (char c : pathString)
-        {
-            if (invalidChars.find(c) != std::string::npos)
-            {
-                result.IsValid = false;
-                result.ErrorMessage = "Path contains invalid characters: " + std::string(1, c);
-                return result;
-            }
-        }
-
-        try
-        {
-            std::filesystem::path testPath = path;
-            if (!testPath.is_absolute() && !testPath.is_relative())
-            {
-                result.IsValid = false;
-                result.ErrorMessage = "Invalid path format";
-                return result;
-            }
-        }
-        catch (...)
-        {
-            result.IsValid = false;
-            result.ErrorMessage = "Invalid path format";
-            return result;
-        }
-
-        return result;
-    }
-
-    ValidationResult Settings::ValidateAutoSaveInterval(int seconds)
-    {
-        ValidationResult result;
-
-        if (seconds < 10)
-        {
-            result.IsValid = false;
-            result.ErrorMessage = "Auto-save interval must be at least 10 seconds";
-            return result;
-        }
-
-        if (seconds > 3600)
-        {
-            result.IsValid = false;
-            result.ErrorMessage = "Auto-save interval cannot exceed 3600 seconds (1 hour)";
-            return result;
-        }
-
-        return result;
-    }
-
-    void Settings::RevertRecordingsFolder()
-    {
-        LUMINA_ASSERT(s_Instance != nullptr, "Settings not initialized! Call Settings::Init() first.");
-        s_Instance->m_CurrentData.RecordingsFolder = s_Instance->m_ValidData.RecordingsFolder;
-    }
-
-    void Settings::RevertAutoSaveInterval()
-    {
-        LUMINA_ASSERT(s_Instance != nullptr, "Settings not initialized! Call Settings::Init() first.");
-        s_Instance->m_CurrentData.AutoSaveIntervalSeconds = s_Instance->m_ValidData.AutoSaveIntervalSeconds;
-    }
-
-    void Settings::RevertAll()
-    {
-        LUMINA_ASSERT(s_Instance != nullptr, "Settings not initialized! Call Settings::Init() first.");
-        s_Instance->m_CurrentData = s_Instance->m_ValidData;
-        s_Instance->m_Modified = (s_Instance->m_CurrentData != s_Instance->m_SavedData);
+        return s_Instance->m_CurrentData != s_Instance->m_SavedData;
     }
 
     void Settings::SubscribeToChanges(SettingsChangedCallback callback)
@@ -194,21 +89,7 @@ namespace Lumina
     Settings::Settings()
     {
         LoadFromJson();
-        m_ValidData = m_CurrentData;
         m_SavedData = m_CurrentData;
-    }
-
-    ValidationResult Settings::ValidateInternal()
-    {
-        ValidationResult folderValidation = ValidateRecordingsFolder(m_CurrentData.RecordingsFolder);
-        if (!folderValidation.IsValid)
-            return folderValidation;
-
-        ValidationResult intervalValidation = ValidateAutoSaveInterval(m_CurrentData.AutoSaveIntervalSeconds);
-        if (!intervalValidation.IsValid)
-            return intervalValidation;
-
-        return ValidationResult{ true, "" };
     }
 
     bool Settings::LoadFromJson()

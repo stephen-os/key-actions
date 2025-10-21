@@ -20,7 +20,6 @@ namespace Lumina
         void OnRender() override;
 
     private:
-        char m_RecordingsFolderBuffer[512];
         int m_AutoSaveIntervalBuffer;
         bool m_AutoSaveEnabledBuffer;
 

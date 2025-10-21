@@ -22,12 +22,6 @@ namespace Lumina
         bool operator==(const SettingsData& other) const = default;
     };
 
-    struct ValidationResult
-    {
-        bool IsValid = true;
-        std::string ErrorMessage;
-    };
-
     class Settings
     {
     public:
@@ -40,15 +34,6 @@ namespace Lumina
         static SettingsData& GetMutable();
 
         static bool IsModified();
-        static bool IsValid();
-        static ValidationResult Validate();
-
-        static ValidationResult ValidateRecordingsFolder(const std::filesystem::path& path);
-        static ValidationResult ValidateAutoSaveInterval(int seconds);
-
-        static void RevertRecordingsFolder();
-        static void RevertAutoSaveInterval();
-        static void RevertAll();
 
         using SettingsChangedCallback = std::function<void()>;
         static void SubscribeToChanges(SettingsChangedCallback callback);
@@ -70,12 +55,9 @@ namespace Lumina
 
         bool LoadFromJson();
         bool SaveToJson();
-        ValidationResult ValidateInternal();
 
         SettingsData m_CurrentData;
-        SettingsData m_ValidData;
         SettingsData m_SavedData;
-        bool m_Modified = false;
         std::vector<SettingsChangedCallback> m_Callbacks;
 
         static Settings* s_Instance;
