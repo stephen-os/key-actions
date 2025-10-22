@@ -22,11 +22,8 @@ namespace KeyActions
 
     void Settings::Shutdown()
     {
-        if (s_Instance != nullptr)
-        {
-            delete s_Instance;
-            s_Instance = nullptr;
-        }
+        delete s_Instance;
+        s_Instance = nullptr;
     }
 
     bool Settings::Load()
