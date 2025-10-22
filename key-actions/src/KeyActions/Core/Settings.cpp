@@ -10,7 +10,7 @@ using json = nlohmann::json;
 
 namespace KeyActions
 {
-    Settings* Settings::s_Instance = nullptr;
+    static Settings* s_Instance = nullptr;
 
     void Settings::Init()
     {

@@ -68,8 +68,6 @@ namespace KeyActions
 
         SettingsData m_CurrentData;
         SettingsData m_SavedData;
-        std::vector<SettingsChangedCallback> m_Callbacks;
-
-        static Settings* s_Instance;
+        std::vector<SettingsChangedCallback> m_Callbacks; 
     };
 }
