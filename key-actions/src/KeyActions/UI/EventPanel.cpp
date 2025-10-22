@@ -1,6 +1,8 @@
 #include "EventPanel.h"
 
 #include "Lumina/Core/Input.h"
+#include "Styles/StyledWidgets.h"
+#include "Styles/Theme.h"
 
 #include <sstream>
 #include <iomanip>
@@ -13,7 +15,6 @@ namespace KeyActions
     {
         m_Events.push_back(event);
 
-        // Limit event count
         if (m_Events.size() > m_MaxEvents)
         {
             m_Events.erase(m_Events.begin());
@@ -27,15 +28,17 @@ namespace KeyActions
 
     ImVec4 EventPanel::GetEventColor(RecordedAction action) const
     {
+        using namespace UI;
+
         switch (action)
         {
-        case RecordedAction::KeyPressed:       return ImVec4(0.4f, 0.8f, 0.4f, 1.0f); // Green
-        case RecordedAction::KeyReleased:      return ImVec4(0.8f, 0.4f, 0.4f, 1.0f); // Red
-        case RecordedAction::MousePressed:     return ImVec4(0.4f, 0.6f, 0.9f, 1.0f); // Blue
-        case RecordedAction::MouseReleased:    return ImVec4(0.7f, 0.4f, 0.8f, 1.0f); // Purple
-        case RecordedAction::MouseMoved:       return ImVec4(0.6f, 0.6f, 0.6f, 1.0f); // Gray
-        case RecordedAction::MouseScrolled:    return ImVec4(0.9f, 0.7f, 0.4f, 1.0f); // Orange
-        default:                           return ImVec4(1.0f, 1.0f, 1.0f, 1.0f); // White
+        case RecordedAction::KeyPressed:       return Colors::KeyPressed;
+        case RecordedAction::KeyReleased:      return Colors::KeyReleased;
+        case RecordedAction::MousePressed:     return Colors::MousePressed;
+        case RecordedAction::MouseReleased:    return Colors::MouseReleased;
+        case RecordedAction::MouseMoved:       return Colors::MouseMoved;
+        case RecordedAction::MouseScrolled:    return Colors::MouseScrolled;
+        default:                               return Colors::TextNormal;
         }
     }
 
@@ -49,15 +52,16 @@ namespace KeyActions
         case RecordedAction::MouseReleased:    return "[MOUSE-]";
         case RecordedAction::MouseMoved:       return "[MOVE]";
         case RecordedAction::MouseScrolled:    return "[SCROLL]";
-        default:                           return "[???]";
+        default:                               return "[???]";
         }
     }
 
     void EventPanel::RenderEvent(const RecordedEvent& event, int index)
     {
+        using namespace UI;
+
         ImGui::PushID(index);
 
-        // Format time as MM:SS.mmm
         int minutes = static_cast<int>(event.Time) / 60;
         int seconds = static_cast<int>(event.Time) % 60;
         int milliseconds = static_cast<int>((event.Time - static_cast<int>(event.Time)) * 1000);
@@ -67,21 +71,25 @@ namespace KeyActions
             << std::setw(2) << seconds << "."
             << std::setw(3) << milliseconds;
 
-        // Create a button-like appearance for each event
         ImVec4 color = GetEventColor(event.Action);
+        ImVec4 hoverColor = ImVec4(
+            std::min(color.x * 1.2f, 1.0f),
+            std::min(color.y * 1.2f, 1.0f),
+            std::min(color.z * 1.2f, 1.0f),
+            1.0f
+        );
+
         ImGui::PushStyleColor(ImGuiCol_Button, color);
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(color.x * 1.2f, color.y * 1.2f, color.z * 1.2f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor);
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, color);
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, Rounding::Small);
 
-        // Time column
-        ImGui::Button(timeStr.str().c_str(), ImVec2(80, 0));
+        ImGui::Button(timeStr.str().c_str(), ImVec2(90, 26));
         ImGui::SameLine();
 
-        // Event type icon
-        ImGui::Button(GetEventIcon(event.Action), ImVec2(80, 0));
+        ImGui::Button(GetEventIcon(event.Action), ImVec2(90, 26));
         ImGui::SameLine();
 
-        // Event details
         std::string details;
         switch (event.Action)
         {
@@ -116,29 +124,34 @@ namespace KeyActions
         }
         }
 
-        ImGui::Button(details.c_str(), ImVec2(-1, 0));
+        ImGui::Button(details.c_str(), ImVec2(-1, 26));
 
+        ImGui::PopStyleVar();
         ImGui::PopStyleColor(3);
         ImGui::PopID();
     }
 
     void EventPanel::Render(const ImVec2& size)
     {
-        ImGui::BeginChild("EventPanelEvents", ImVec2(size.x, size.y - 30), false);
+        using namespace UI;
+
+        ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, Rounding::Small);
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, Colors::BackgroundDark);
+        ImGui::BeginChild("EventPanelEvents", ImVec2(size.x, size.y - 45), true);
 
         for (size_t i = 0; i < m_Events.size(); i++)
         {
             RenderEvent(m_Events[i], static_cast<int>(i));
         }
 
-        // Auto-scroll to bottom
         if (m_AutoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
             ImGui::SetScrollHereY(1.0f);
 
         ImGui::EndChild();
+        ImGui::PopStyleColor();
+        ImGui::PopStyleVar();
 
-        // Clear button
-        if (ImGui::Button("Clear Events", ImVec2(-1, 0)))
+        if (ButtonDanger("Clear Events", Sizes::ButtonFull))
         {
             Clear();
         }

@@ -2,6 +2,10 @@
 
 #include "Lumina/Core/Log.h"
 
+#include "Styles/Theme.h"
+#include "Styles/StyledWidgets.h"
+#include "Styles/WidgetVariants.h"
+
 #include <cstring>
 
 namespace KeyActions
@@ -84,73 +88,69 @@ namespace KeyActions
 
     void RecordingTab::OnRender()
     {
-        // Left column - Controls
-        ImGui::BeginChild("RecordControls", ImVec2(300, 0), true);
+        using namespace UI;
 
-        ImGui::Text("Name of Recording:");
-        ImGui::InputText("##RecordingName", m_RecordingName, sizeof(m_RecordingName));
+        BeginPanel("RecordControls", ImVec2(320, 0), true);
+
+        Heading2("Recording Settings");
+
+        Label("Name of Recording:");
+        InputTextStyled("##RecordingName", m_RecordingName, sizeof(m_RecordingName));
 
         if (m_ShowNameError)
         {
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-            ImGui::Text("Name cannot be blank!");
-            ImGui::PopStyleColor();
+            TextDanger("Name cannot be blank!");
         }
 
-        ImGui::Spacing();
-        ImGui::Checkbox("Record Mouse Movement", &m_RecordMouseMovement);
+		Spacing();
 
-        ImGui::Spacing();
-        ImGui::Text("Delay (seconds):");
-        ImGui::SliderInt("##InitialDelay", &m_InitialDelay, 0, 10);
+        CheckboxStyled("Record Mouse Movement", &m_RecordMouseMovement);
 
-        ImGui::Spacing();
-        ImGui::Separator();
-        ImGui::Spacing();
+		Spacing();
 
-        // Recording controls
+        Label("Delay (seconds):");
+        SliderIntStyled("##InitialDelay", &m_InitialDelay, 0, 10);
+
+        SectionSeparator();
+
         bool isRecording = m_RecordingSession.IsRecording();
         bool isWaiting = m_RecordingSession.IsWaitingForDelay();
 
-        ImGui::BeginDisabled(isRecording || isWaiting);
-        if (ImGui::Button("Start Recording", ImVec2(-1, 40)))
+        if (ButtonStartRecording(!isRecording && !isWaiting))
         {
             StartRecording();
         }
-        ImGui::EndDisabled();
 
-        ImGui::BeginDisabled(!isRecording && !isWaiting);
-        if (ImGui::Button("Stop Recording", ImVec2(-1, 40)))
+        if (ButtonStopRecording(isRecording || isWaiting))
         {
             StopRecording();
         }
-        ImGui::EndDisabled();
 
-        ImGui::Spacing();
+        Spacing(); 
 
         if (isWaiting)
         {
-            ImGui::Text("Recording starts in %.1f seconds...", m_RecordingSession.GetDelayTimeRemaining());
+            TextWarning("Recording starts in %.1f seconds...", m_RecordingSession.GetDelayTimeRemaining());
         }
         else if (isRecording)
         {
-            ImGui::Text("Recording... %.2fs", m_RecordingSession.GetElapsedTime());
-            ImGui::Text("Events recorded: %zu", m_RecordingSession.GetEventCount());
+            TextHighlight("Recording... %.2fs", m_RecordingSession.GetElapsedTime());
+            TextMuted("Events recorded: %zu", m_RecordingSession.GetEventCount());
         }
 
-        ImGui::EndChild();
+        EndPanel();
 
-        ImGui::SameLine();
+        Spacing();
+        
+        BeginPanel("RecordEventPanel", ImVec2(0, 0), true);
 
-        // Right column - Event Panel
-        ImGui::BeginChild("RecordEventPanel", ImVec2(0, 0), true);
+        Heading2("Recorded Events");
 
-        ImGui::Text("Recorded Events");
-        ImGui::Separator();
+        Spacing(); 
 
         m_EventPanel.Render(ImVec2(0, 0));
 
-        ImGui::EndChild();
+        EndPanel();
     }
 
     void RecordingTab::StartRecording()

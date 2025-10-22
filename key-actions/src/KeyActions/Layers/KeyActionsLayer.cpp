@@ -8,6 +8,8 @@
 
 #include "Lumina/Core/Log.h"
 
+#include "KeyActions/UI/Styles/Theme.h"
+
 namespace KeyActions
 {
     KeyActionsLayer::KeyActionsLayer() : Layer("KeyActions") {}
@@ -15,6 +17,8 @@ namespace KeyActions
     void KeyActionsLayer::OnAttach()
     {
         Settings::Init();
+
+        UI::ApplyTheme(); 
 
         auto recordingTab = std::make_shared<RecordingTab>();
         auto playbackTab = std::make_shared<PlaybackTab>();
