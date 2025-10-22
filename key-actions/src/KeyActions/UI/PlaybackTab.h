@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Tab.h"
 
 #include "KeyActions/Core/Recording.h"
@@ -8,7 +9,7 @@
 #include <vector>
 #include <string>
 
-namespace Lumina
+namespace KeyActions
 {
     class PlaybackTab : public Tab
     {

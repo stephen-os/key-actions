@@ -1,12 +1,10 @@
 #include "PlaybackTab.h"
+
 #include "Lumina/Core/Log.h"
 
-namespace Lumina
+namespace KeyActions
 {
-    PlaybackTab::PlaybackTab()
-        : Tab("Playback")
-    {
-    }
+    PlaybackTab::PlaybackTab() : Tab("Playback") {}
 
     void PlaybackTab::OnAttach()
     {

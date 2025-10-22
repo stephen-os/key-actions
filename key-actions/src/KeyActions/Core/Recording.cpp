@@ -5,7 +5,7 @@
 #include <sstream>
 #include <iomanip>
 
-namespace Lumina
+namespace KeyActions
 {
     std::string RecordedEvent::ToString() const
     {
@@ -23,10 +23,10 @@ namespace Lumina
         switch (Action)
         {
         case RecordedAction::KeyPressed:
-            ss << "Key Pressed: " << Input::KeyCodeToString(Key);
+            ss << "Key Pressed: " << Lumina::Input::KeyCodeToString(Key);
             break;
         case RecordedAction::KeyReleased:
-            ss << "Key Released: " << Input::KeyCodeToString(Key);
+            ss << "Key Released: " << Lumina::Input::KeyCodeToString(Key);
             break;
         case RecordedAction::MousePressed:
             ss << "Mouse Pressed: Button " << static_cast<int>(Button)

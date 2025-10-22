@@ -5,7 +5,7 @@
 
 #include "Lumina/Core/KeyCodes.h"
 
-namespace Lumina
+namespace KeyActions
 {
     enum class RecordedAction
     {
@@ -19,6 +19,9 @@ namespace Lumina
 
     struct RecordedEvent
     {
+        using KeyCode = Lumina::KeyCode;
+		using MouseCode = Lumina::MouseCode;
+
         RecordedAction Action;
         float Time;
 

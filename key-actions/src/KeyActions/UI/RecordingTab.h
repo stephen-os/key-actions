@@ -1,21 +1,27 @@
 #pragma once
 #include "Tab.h"
+
 #include "EventPanel.h"
+
 #include "KeyActions/Core/RecordingSession.h"
 #include "KeyActions/Core/Serialization.h"
 
-namespace Lumina
-{
-    class GlobalKeyPressedEvent;
-    class GlobalKeyReleasedEvent;
-    class GlobalMouseButtonPressedEvent;
-    class GlobalMouseButtonReleasedEvent;
-    class GlobalMouseMovedEvent;
-    class GlobalMouseScrolledEvent;
+#include "Lumina/Events/GlobalKeyEvent.h"
+#include "Lumina/Events/GlobalMouseEvent.h"
 
+namespace KeyActions
+{
     class RecordingTab : public Tab
     {
     public:
+        using KeyPressedEvent = Lumina::GlobalKeyPressedEvent;
+		using KeyReleasedEvent = Lumina::GlobalKeyReleasedEvent;
+
+		using MouseButtonPressedEvent = Lumina::GlobalMouseButtonPressedEvent;
+		using MouseButtonReleasedEvent = Lumina::GlobalMouseButtonReleasedEvent;
+		using MouseMovedEvent = Lumina::GlobalMouseMovedEvent;
+		using MouseScrolledEvent = Lumina::GlobalMouseScrolledEvent;
+
         RecordingTab();
 
         virtual void OnAttach() override;

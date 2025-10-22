@@ -7,15 +7,14 @@
 #include <json.hpp>
 
 using json = nlohmann::json;
-namespace fs = std::filesystem;
 
-namespace Lumina
+namespace KeyActions
 {
     void Serialization::EnsureRecordingsFolderExists(const std::string& folderPath)
     {
-        if (!fs::exists(folderPath))
+        if (!std::filesystem::exists(folderPath))
         {
-            fs::create_directories(folderPath);
+            std::filesystem::create_directories(folderPath);
             LUMINA_LOG_INFO("Created recordings folder: {}", folderPath);
         }
     }
@@ -84,7 +83,7 @@ namespace Lumina
     {
         try
         {
-            std::ifstream file(filepath);
+			std::ifstream file(filepath);
             if (!file.is_open())
             {
                 LUMINA_LOG_ERROR("Failed to open recording file: {}", filepath);
@@ -108,11 +107,11 @@ namespace Lumina
 
                 if (event.Action == RecordedAction::KeyPressed || event.Action == RecordedAction::KeyReleased)
                 {
-                    event.Key = static_cast<KeyCode>(eventJson["key"]);
+                    event.Key = static_cast<Lumina::KeyCode>(eventJson["key"]);
                 }
                 else if (event.Action == RecordedAction::MousePressed || event.Action == RecordedAction::MouseReleased)
                 {
-                    event.Button = static_cast<MouseCode>(eventJson["button"]);
+                    event.Button = static_cast<Lumina::MouseCode>(eventJson["button"]);
                     event.MouseX = eventJson["x"];
                     event.MouseY = eventJson["y"];
                 }
@@ -144,10 +143,10 @@ namespace Lumina
     {
         std::vector<std::string> recordings;
 
-        if (!fs::exists(folderPath))
+        if (!std::filesystem::exists(folderPath))
             return recordings;
 
-        for (const auto& entry : fs::directory_iterator(folderPath))
+        for (const auto& entry : std::filesystem::directory_iterator(folderPath))
         {
             if (entry.path().extension() == ".rec")
             {

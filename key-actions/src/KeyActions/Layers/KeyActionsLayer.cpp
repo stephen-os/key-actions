@@ -8,7 +8,7 @@
 
 #include "Lumina/Core/Log.h"
 
-namespace Lumina
+namespace KeyActions
 {
     KeyActionsLayer::KeyActionsLayer() : Layer("KeyActions") {}
 

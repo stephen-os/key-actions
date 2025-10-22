@@ -5,11 +5,11 @@
 
 #include <chrono>
 
-namespace Lumina
+namespace KeyActions
 {
     PlaybackSession::PlaybackSession()
     {
-        m_Playback = GlobalInputPlayback::Create();
+        m_Playback = Lumina::GlobalInputPlayback::Create();
 
         if (!m_Playback)
         {

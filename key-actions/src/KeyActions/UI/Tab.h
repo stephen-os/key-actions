@@ -1,10 +1,15 @@
 #pragma once
+
 #include <string>
 #include <imgui.h>
 
-namespace Lumina
+#include "Lumina/Events/Event.h"
+
+namespace KeyActions
 {
-    class Event;
+    class Lumina::Event;
+
+    using Event = Lumina::Event;
 
     class Tab
     {

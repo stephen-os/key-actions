@@ -1,15 +1,14 @@
 #include "RecordingSession.h"
+
 #include "Lumina/Core/Application.h"
 #include "Lumina/Core/Input.h"
 #include "Lumina/Core/Log.h"
-#include "Lumina/Events/GlobalKeyEvent.h"
-#include "Lumina/Events/GlobalMouseEvent.h"
 
-namespace Lumina
+namespace KeyActions
 {
     RecordingSession::RecordingSession()
     {
-        m_GlobalInputCapture = GlobalInputCapture::Create();
+        m_GlobalInputCapture = Lumina::GlobalInputCapture::Create();
 
         if (!m_GlobalInputCapture)
         {
@@ -50,23 +49,18 @@ namespace Lumina
             return false;
         }
 
-        // Store settings
         m_Settings = settings;
 
-        // Create new recording
         m_CurrentRecording = Recording(settings.Name, settings.RecordMouseMovement);
 
-        // Enable event posting to application
         m_GlobalInputCapture->SetPostEventsToApplication(true);
 
-        // Start global input capture
         if (!m_GlobalInputCapture->Start())
         {
             LUMINA_LOG_ERROR("Failed to start global input capture");
             return false;
         }
 
-        // Handle initial delay
         if (settings.InitialDelaySeconds > 0)
         {
             m_IsWaitingForDelay = true;
@@ -76,7 +70,7 @@ namespace Lumina
         else
         {
             m_IsRecording = true;
-            m_RecordingStartTime = Application::GetTime();
+            m_RecordingStartTime = Lumina::Application::GetTime();
             LUMINA_LOG_INFO("Recording started: {}", settings.Name);
 
             if (m_RecordingStartedCallback)
@@ -106,9 +100,8 @@ namespace Lumina
         }
 
         m_IsRecording = false;
-        m_CurrentRecording.TotalDuration = Application::GetTime() - m_RecordingStartTime;
+        m_CurrentRecording.TotalDuration = Lumina::Application::GetTime() - m_RecordingStartTime;
 
-        // Stop global input capture
         if (m_GlobalInputCapture)
         {
             m_GlobalInputCapture->Stop();
@@ -138,7 +131,7 @@ namespace Lumina
             m_GlobalInputCapture->Stop();
         }
 
-        m_CurrentRecording = Recording(); // Clear recording
+        m_CurrentRecording = Recording();
 
         LUMINA_LOG_INFO("Recording cancelled");
     }
@@ -148,7 +141,7 @@ namespace Lumina
         if (!m_IsRecording)
             return 0.0f;
 
-        return Application::GetTime() - m_RecordingStartTime;
+        return Lumina::Application::GetTime() - m_RecordingStartTime;
     }
 
     size_t RecordingSession::GetEventCount() const
@@ -172,7 +165,7 @@ namespace Lumina
             {
                 m_IsWaitingForDelay = false;
                 m_IsRecording = true;
-                m_RecordingStartTime = Application::GetTime();
+                m_RecordingStartTime = Lumina::Application::GetTime();
                 LUMINA_LOG_INFO("Recording started: {}", m_Settings.Name);
 
                 if (m_RecordingStartedCallback)
@@ -198,22 +191,22 @@ namespace Lumina
         m_RecordingStoppedCallback = callback;
     }
 
-    void RecordingSession::OnGlobalKeyPressed(GlobalKeyPressedEvent& e)
+    void RecordingSession::OnKeyPressed(KeyPressedEvent& e)
     {
         if (!m_IsRecording)
             return;
 
         RecordedEvent event;
         event.Action = RecordedAction::KeyPressed;
-        event.Time = Application::GetTime() - m_RecordingStartTime;
+        event.Time = Lumina::Application::GetTime() - m_RecordingStartTime;
         event.Key = e.GetKeyCode();
 
         // Capture modifier states
-        event.ShiftPressed = Input::IsShiftPressed();
-        event.CtrlPressed = Input::IsCtrlPressed();
-        event.AltPressed = Input::IsAltPressed();
-        event.SuperPressed = Input::IsSuperPressed();
-        event.CapsLockActive = Input::IsCapsLockActive();
+        event.ShiftPressed = Lumina::Input::IsShiftPressed();
+        event.CtrlPressed = Lumina::Input::IsCtrlPressed();
+        event.AltPressed = Lumina::Input::IsAltPressed();
+        event.SuperPressed = Lumina::Input::IsSuperPressed();
+        event.CapsLockActive = Lumina::Input::IsCapsLockActive();
 
         m_CurrentRecording.Events.push_back(event);
 
@@ -223,22 +216,21 @@ namespace Lumina
         }
     }
 
-    void RecordingSession::OnGlobalKeyReleased(GlobalKeyReleasedEvent& e)
+    void RecordingSession::OnKeyReleased(KeyReleasedEvent& e)
     {
         if (!m_IsRecording)
             return;
 
         RecordedEvent event;
         event.Action = RecordedAction::KeyReleased;
-        event.Time = Application::GetTime() - m_RecordingStartTime;
+        event.Time = Lumina::Application::GetTime() - m_RecordingStartTime;
         event.Key = e.GetKeyCode();
 
-        // Capture modifier states
-        event.ShiftPressed = Input::IsShiftPressed();
-        event.CtrlPressed = Input::IsCtrlPressed();
-        event.AltPressed = Input::IsAltPressed();
-        event.SuperPressed = Input::IsSuperPressed();
-        event.CapsLockActive = Input::IsCapsLockActive();
+        event.ShiftPressed = Lumina::Input::IsShiftPressed();
+        event.CtrlPressed = Lumina::Input::IsCtrlPressed();
+        event.AltPressed = Lumina::Input::IsAltPressed();
+        event.SuperPressed = Lumina::Input::IsSuperPressed();
+        event.CapsLockActive = Lumina::Input::IsCapsLockActive();
 
         m_CurrentRecording.Events.push_back(event);
 
@@ -248,14 +240,14 @@ namespace Lumina
         }
     }
 
-    void RecordingSession::OnGlobalMouseButtonPressed(GlobalMouseButtonPressedEvent& e)
+    void RecordingSession::OnMouseButtonPressed(MouseButtonPressedEvent& e)
     {
         if (!m_IsRecording)
             return;
 
         RecordedEvent event;
         event.Action = RecordedAction::MousePressed;
-        event.Time = Application::GetTime() - m_RecordingStartTime;
+        event.Time = Lumina::Application::GetTime() - m_RecordingStartTime;
         event.Button = e.GetMouseButton();
         event.MouseX = e.GetX();
         event.MouseY = e.GetY();
@@ -268,14 +260,14 @@ namespace Lumina
         }
     }
 
-    void RecordingSession::OnGlobalMouseButtonReleased(GlobalMouseButtonReleasedEvent& e)
+    void RecordingSession::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
     {
         if (!m_IsRecording)
             return;
 
         RecordedEvent event;
         event.Action = RecordedAction::MouseReleased;
-        event.Time = Application::GetTime() - m_RecordingStartTime;
+        event.Time = Lumina::Application::GetTime() - m_RecordingStartTime;
         event.Button = e.GetMouseButton();
         event.MouseX = e.GetX();
         event.MouseY = e.GetY();
@@ -288,14 +280,13 @@ namespace Lumina
         }
     }
 
-    void RecordingSession::OnGlobalMouseMoved(GlobalMouseMovedEvent& e)
+    void RecordingSession::OnMouseMoved(MouseMovedEvent& e)
     {
         if (!m_IsRecording)
             return;
 
-        float currentTime = Application::GetTime();
+        float currentTime = Lumina::Application::GetTime();
 
-        // Throttle mouse moves
         if (currentTime - m_LastMouseMoveTime < m_Settings.MouseMoveThreshold)
             return;
 
@@ -315,14 +306,14 @@ namespace Lumina
         }
     }
 
-    void RecordingSession::OnGlobalMouseScrolled(GlobalMouseScrolledEvent& e)
+    void RecordingSession::OnMouseScrolled(MouseScrolledEvent& e)
     {
         if (!m_IsRecording)
             return;
 
         RecordedEvent event;
         event.Action = RecordedAction::MouseScrolled;
-        event.Time = Application::GetTime() - m_RecordingStartTime;
+        event.Time = Lumina::Application::GetTime() - m_RecordingStartTime;
         event.ScrollDX = e.GetDX();
         event.ScrollDY = e.GetDY();
 

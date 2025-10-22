@@ -8,7 +8,7 @@
 
 using json = nlohmann::json;
 
-namespace Lumina
+namespace KeyActions
 {
     Settings* Settings::s_Instance = nullptr;
 

@@ -1,14 +1,13 @@
 #include "SettingsTab.h"
+
 #include "Lumina/Core/Log.h"
 #include "Lumina/Events/WindowKeyEvent.h"
+
 #include <ImGuiFileDialog.h>
 
-namespace Lumina
+namespace KeyActions
 {
-    SettingsTab::SettingsTab()
-        : Tab("Settings")
-    {
-    }
+    SettingsTab::SettingsTab() : Tab("Settings") {}
 
     void SettingsTab::OnAttach()
     {
@@ -33,18 +32,18 @@ namespace Lumina
 
     void SettingsTab::OnEvent(Event& e)
     {
-        EventDispatcher dispatcher(e);
+        Lumina::EventDispatcher dispatcher(e);
 
-        dispatcher.Dispatch<WindowKeyPressedEvent>([this](WindowKeyPressedEvent& event) {
+        dispatcher.Dispatch<Lumina::WindowKeyPressedEvent>([this](Lumina::WindowKeyPressedEvent& event) {
             if (event.IsRepeat())
                 return false;
 
-            KeyCode keyCode = event.GetKeyCode();
+            Lumina::KeyCode keyCode = event.GetKeyCode();
 
             if (m_CapturingStartRecording || m_CapturingStopRecording ||
                 m_CapturingPlayRecording || m_CapturingStopPlayback)
             {
-                if (keyCode == KeyCode::Escape)
+                if (keyCode == Lumina::KeyCode::Escape)
                 {
                     m_CapturingStartRecording = false;
                     m_CapturingStopRecording = false;
@@ -64,14 +63,14 @@ namespace Lumina
             return false;
             });
 
-        dispatcher.Dispatch<WindowKeyReleasedEvent>([this](WindowKeyReleasedEvent& event) {
+        dispatcher.Dispatch<Lumina::WindowKeyReleasedEvent>([this](Lumina::WindowKeyReleasedEvent& event) {
             if (m_CapturingStartRecording || m_CapturingStopRecording ||
                 m_CapturingPlayRecording || m_CapturingStopPlayback)
             {
                 if (!m_CapturedKeys.empty())
                 {
                     auto& settings = Settings::GetMutable();
-                    KeyCombo newCombo;
+                    Lumina::KeyCombo newCombo;
                     newCombo.Keys = m_CapturedKeys;
 
                     if (m_CapturingStartRecording)
@@ -129,7 +128,7 @@ namespace Lumina
             std::string keysText;
             for (size_t i = 0; i < m_CapturedKeys.size(); i++)
             {
-                keysText += Input::KeyCodeToString(m_CapturedKeys[i]);
+                keysText += Lumina::Input::KeyCodeToString(m_CapturedKeys[i]);
                 if (i < m_CapturedKeys.size() - 1)
                     keysText += " + ";
             }
@@ -142,7 +141,7 @@ namespace Lumina
             std::string keysText;
             for (size_t i = 0; i < settings.StartRecording.Keys.size(); i++)
             {
-                keysText += Input::KeyCodeToString(settings.StartRecording.Keys[i]);
+                keysText += Lumina::Input::KeyCodeToString(settings.StartRecording.Keys[i]);
                 if (i < settings.StartRecording.Keys.size() - 1)
                     keysText += " + ";
             }
@@ -161,7 +160,7 @@ namespace Lumina
             std::string keysText;
             for (size_t i = 0; i < m_CapturedKeys.size(); i++)
             {
-                keysText += Input::KeyCodeToString(m_CapturedKeys[i]);
+                keysText += Lumina::Input::KeyCodeToString(m_CapturedKeys[i]);
                 if (i < m_CapturedKeys.size() - 1)
                     keysText += " + ";
             }
@@ -174,7 +173,7 @@ namespace Lumina
             std::string keysText;
             for (size_t i = 0; i < settings.StopRecording.Keys.size(); i++)
             {
-                keysText += Input::KeyCodeToString(settings.StopRecording.Keys[i]);
+                keysText += Lumina::Input::KeyCodeToString(settings.StopRecording.Keys[i]);
                 if (i < settings.StopRecording.Keys.size() - 1)
                     keysText += " + ";
             }
@@ -200,7 +199,7 @@ namespace Lumina
             std::string keysText;
             for (size_t i = 0; i < m_CapturedKeys.size(); i++)
             {
-                keysText += Input::KeyCodeToString(m_CapturedKeys[i]);
+                keysText += Lumina::Input::KeyCodeToString(m_CapturedKeys[i]);
                 if (i < m_CapturedKeys.size() - 1)
                     keysText += " + ";
             }
@@ -213,7 +212,7 @@ namespace Lumina
             std::string keysText;
             for (size_t i = 0; i < settings.PlayRecording.Keys.size(); i++)
             {
-                keysText += Input::KeyCodeToString(settings.PlayRecording.Keys[i]);
+                keysText += Lumina::Input::KeyCodeToString(settings.PlayRecording.Keys[i]);
                 if (i < settings.PlayRecording.Keys.size() - 1)
                     keysText += " + ";
             }
@@ -232,7 +231,7 @@ namespace Lumina
             std::string keysText;
             for (size_t i = 0; i < m_CapturedKeys.size(); i++)
             {
-                keysText += Input::KeyCodeToString(m_CapturedKeys[i]);
+                keysText += Lumina::Input::KeyCodeToString(m_CapturedKeys[i]);
                 if (i < m_CapturedKeys.size() - 1)
                     keysText += " + ";
             }
@@ -245,7 +244,7 @@ namespace Lumina
             std::string keysText;
             for (size_t i = 0; i < settings.StopPlayback.Keys.size(); i++)
             {
-                keysText += Input::KeyCodeToString(settings.StopPlayback.Keys[i]);
+                keysText += Lumina::Input::KeyCodeToString(settings.StopPlayback.Keys[i]);
                 if (i < settings.StopPlayback.Keys.size() - 1)
                     keysText += " + ";
             }

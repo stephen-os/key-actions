@@ -1,15 +1,13 @@
-// UI/EventPanel.cpp
 #include "EventPanel.h"
+
 #include "Lumina/Core/Input.h"
+
 #include <sstream>
 #include <iomanip>
 
-namespace Lumina
+namespace KeyActions
 {
-    EventPanel::EventPanel(int maxEvents)
-        : m_MaxEvents(maxEvents)
-    {
-    }
+    EventPanel::EventPanel(int maxEvents) : m_MaxEvents(maxEvents) {}
 
     void EventPanel::AddEvent(const RecordedEvent& event)
     {
@@ -89,7 +87,7 @@ namespace Lumina
         {
         case RecordedAction::KeyPressed:
         case RecordedAction::KeyReleased:
-            details = Input::KeyCodeToString(event.Key);
+            details = Lumina::Input::KeyCodeToString(event.Key);
             break;
         case RecordedAction::MousePressed:
         case RecordedAction::MouseReleased:

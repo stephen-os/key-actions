@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Recording.h"
 
 #include "Lumina/Input/GlobalInputPlayback.h"
@@ -9,7 +10,7 @@
 #include <functional>
 #include <mutex>
 
-namespace Lumina
+namespace KeyActions
 {
     using PlaybackProgressCallback = std::function<void(float progress, size_t currentEventIndex)>;
     using PlaybackCompleteCallback = std::function<void()>;
@@ -53,7 +54,7 @@ namespace Lumina
         void PlaybackThread(Recording recording, PlaybackSettings settings);
         void SimulateEvent(const RecordedEvent& event);
 
-        std::unique_ptr<GlobalInputPlayback> m_Playback;
+        std::unique_ptr<Lumina::GlobalInputPlayback> m_Playback;
         std::thread m_PlaybackThread;
         std::mutex m_CallbackMutex;
 

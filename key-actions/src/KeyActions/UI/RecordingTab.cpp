@@ -1,19 +1,15 @@
 #include "RecordingTab.h"
+
 #include "Lumina/Core/Log.h"
-#include "Lumina/Events/GlobalKeyEvent.h"
-#include "Lumina/Events/GlobalMouseEvent.h"
+
 #include <cstring>
 
-namespace Lumina
+namespace KeyActions
 {
-    RecordingTab::RecordingTab()
-        : Tab("Recording"), m_EventPanel(1000)
-    {
-    }
-
+    RecordingTab::RecordingTab() : Tab("Recording"), m_EventPanel(1000) {}
+    
     void RecordingTab::OnAttach()
     {
-        // Set up callbacks
         m_RecordingSession.SetEventRecordedCallback([this](const RecordedEvent& event) {
             m_EventPanel.AddEvent(event);
             });
@@ -23,7 +19,6 @@ namespace Lumina
             });
 
         m_RecordingSession.SetRecordingStoppedCallback([this]() {
-            // Save the recording
             const Recording& recording = m_RecordingSession.GetRecording();
             if (Serialization::SaveRecording(recording))
             {
@@ -53,36 +48,36 @@ namespace Lumina
 
     void RecordingTab::OnEvent(Event& e)
     {
-        EventDispatcher dispatcher(e);
+        Lumina::EventDispatcher dispatcher(e);
 
-        // Forward global events to recording session
-        dispatcher.Dispatch<GlobalKeyPressedEvent>([this](GlobalKeyPressedEvent& event) {
-            m_RecordingSession.OnGlobalKeyPressed(event);
+        // Forward  events to recording session
+        dispatcher.Dispatch<KeyPressedEvent>([this](KeyPressedEvent& event) {
+            m_RecordingSession.OnKeyPressed(event);
             return false;
             });
 
-        dispatcher.Dispatch<GlobalKeyReleasedEvent>([this](GlobalKeyReleasedEvent& event) {
-            m_RecordingSession.OnGlobalKeyReleased(event);
+        dispatcher.Dispatch<KeyReleasedEvent>([this](KeyReleasedEvent& event) {
+            m_RecordingSession.OnKeyReleased(event);
             return false;
             });
 
-        dispatcher.Dispatch<GlobalMouseButtonPressedEvent>([this](GlobalMouseButtonPressedEvent& event) {
-            m_RecordingSession.OnGlobalMouseButtonPressed(event);
+        dispatcher.Dispatch<MouseButtonPressedEvent>([this](MouseButtonPressedEvent& event) {
+            m_RecordingSession.OnMouseButtonPressed(event);
             return false;
             });
 
-        dispatcher.Dispatch<GlobalMouseButtonReleasedEvent>([this](GlobalMouseButtonReleasedEvent& event) {
-            m_RecordingSession.OnGlobalMouseButtonReleased(event);
+        dispatcher.Dispatch<MouseButtonReleasedEvent>([this](MouseButtonReleasedEvent& event) {
+            m_RecordingSession.OnMouseButtonReleased(event);
             return false;
             });
 
-        dispatcher.Dispatch<GlobalMouseMovedEvent>([this](GlobalMouseMovedEvent& event) {
-            m_RecordingSession.OnGlobalMouseMoved(event);
+        dispatcher.Dispatch<MouseMovedEvent>([this](MouseMovedEvent& event) {
+            m_RecordingSession.OnMouseMoved(event);
             return false;
             });
 
-        dispatcher.Dispatch<GlobalMouseScrolledEvent>([this](GlobalMouseScrolledEvent& event) {
-            m_RecordingSession.OnGlobalMouseScrolled(event);
+        dispatcher.Dispatch<MouseScrolledEvent>([this](MouseScrolledEvent& event) {
+            m_RecordingSession.OnMouseScrolled(event);
             return false;
             });
     }

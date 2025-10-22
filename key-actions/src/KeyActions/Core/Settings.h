@@ -1,20 +1,30 @@
-// Settings.h
 #pragma once
+
 #include <string>
 #include <filesystem>
 #include <functional>
 #include <vector>
+
 #include "Lumina/Core/Input.h"
 #include "Lumina/File/Paths.h"
 
-namespace Lumina
+namespace KeyActions
 {
+    using KeyCode = Lumina::KeyCode;
+    using KeyCombo = Lumina::KeyCombo;
+    namespace Path = Lumina::Path;
+
     struct SettingsData
     {
-        KeyCombo StartRecording = { {KeyCode::LeftControl, KeyCode::LeftShift, KeyCode::R} };
-        KeyCombo StopRecording = { {KeyCode::LeftControl, KeyCode::LeftShift, KeyCode::S} };
-        KeyCombo PlayRecording = { {KeyCode::LeftControl, KeyCode::LeftShift, KeyCode::P} };
-        KeyCombo StopPlayback = { {KeyCode::LeftControl, KeyCode::LeftShift, KeyCode::X} };
+        // Recording Settings
+        KeyCombo StartRecording = { { KeyCode::LeftControl, KeyCode::LeftShift, KeyCode::R } };
+        KeyCombo StopRecording = { { KeyCode::LeftControl, KeyCode::LeftShift, KeyCode::S } };
+
+        // Playback Settings
+        KeyCombo PlayRecording = { { KeyCode::LeftControl, KeyCode::LeftShift, KeyCode::P } };
+        KeyCombo StopPlayback = { { KeyCode::LeftControl, KeyCode::LeftShift, KeyCode::X } };
+        
+        // Application Wide Settings 
         bool AutoSaveEnabled = true;
         int AutoSaveIntervalSeconds = 300;
         std::filesystem::path RecordingsFolder = Path::AppData() / "KeyActions" / "Recordings";

@@ -12,7 +12,7 @@ Lumina::Application* Lumina::CreateApplication(int argc, char** argv)
 	spec.EnableDocking = false;
     
     Lumina::Application* app = new Lumina::Application(spec);
-	app->PushLayer<KeyActionsLayer>();
+	app->PushLayer<KeyActions::KeyActionsLayer>();
 
     return app;
 }

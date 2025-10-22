@@ -5,7 +5,7 @@
 
 #include "KeyActions/Core/Recording.h"
 
-namespace Lumina
+namespace KeyActions
 {
     class EventPanel
     {

@@ -7,9 +7,9 @@
 #include <memory>
 #include <vector>
 
-namespace Lumina
+namespace KeyActions
 {
-    class KeyActionsLayer : public Layer
+    class KeyActionsLayer : public Lumina::Layer
     {
     public:
         KeyActionsLayer();
