@@ -277,4 +277,9 @@ namespace KeyActions::UI
     {
         ImGui::Spacing();
     }
+
+    inline void SameLine()
+    {
+		ImGui::SameLine();
+    }
 }

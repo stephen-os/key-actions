@@ -140,7 +140,7 @@ namespace KeyActions
 
         EndPanel();
 
-        Spacing();
+        SameLine(); 
         
         BeginPanel("RecordEventPanel", ImVec2(0, 0), true);
 
