@@ -66,10 +66,6 @@ namespace KeyActions
 				m_CapturedKeyCombo.Add(event.GetKeyCode());
 			}
 
-            LUMINA_LOG_INFO("Captured key combo:");
-            for (auto key : m_CapturedKeyCombo.Keys)
-                LUMINA_LOG_INFO("   Captured key: {}", Lumina::Input::KeyCodeToString(key));
-
             if (m_CapturedKeyCombo == settings.StartRecording)
             {
                 if (!m_RecordingSession.IsRecording() &&
@@ -77,7 +73,7 @@ namespace KeyActions
                     strnlen(m_RecordingName, sizeof(m_RecordingName)) > 0)
                 {
                     m_RecordingSession.Start({ m_RecordingName, m_RecordMouseMovement, m_InitialDelay });
-                    return false;
+                    return true;
                 }
             }
 
@@ -86,7 +82,7 @@ namespace KeyActions
                 if (m_RecordingSession.IsRecording() || m_RecordingSession.IsWaitingForDelay())
 				{
 				    m_RecordingSession.Stop();
-				    return false;
+				    return true;
 				}
 			}
 
@@ -96,10 +92,17 @@ namespace KeyActions
 
         dispatcher.Dispatch<KeyReleasedEvent>([this](KeyReleasedEvent& event) {
             
-            if (m_CapturedKeyCombo.Contains(event.GetKeyCode()))
-			{
-				m_CapturedKeyCombo.Remove(event.GetKeyCode());
-			}
+            const auto& settings = Settings::Data();
+
+            bool wasPartOfStartCombo = settings.StartRecording.Contains(event.GetKeyCode()) && m_CapturedKeyCombo == settings.StartRecording;
+            bool wasPartOfStopCombo = settings.StopRecording.Contains(event.GetKeyCode()) && m_CapturedKeyCombo == settings.StopRecording;
+
+            m_CapturedKeyCombo.Remove(event.GetKeyCode());
+
+            if (wasPartOfStartCombo || wasPartOfStopCombo)
+            {
+                return true;
+            }
 
             m_RecordingSession.OnKeyReleased(event);
             return false;
