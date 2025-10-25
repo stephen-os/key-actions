@@ -2,6 +2,8 @@
 
 #include "Lumina/Core/Log.h"
 
+#include "KeyActions/Core/Settings.h"
+
 #include "Styles/Theme.h"
 #include "Styles/StyledWidgets.h"
 #include "Styles/WidgetVariants.h"
@@ -56,11 +58,49 @@ namespace KeyActions
 
         // Forward  events to recording session
         dispatcher.Dispatch<KeyPressedEvent>([this](KeyPressedEvent& event) {
+
+            const auto& settings = Settings::Data();
+
+            if (!m_CapturedKeyCombo.Contains(event.GetKeyCode()))
+			{
+				m_CapturedKeyCombo.Add(event.GetKeyCode());
+			}
+
+            LUMINA_LOG_INFO("Captured key combo:");
+            for (auto key : m_CapturedKeyCombo.Keys)
+                LUMINA_LOG_INFO("   Captured key: {}", Lumina::Input::KeyCodeToString(key));
+
+            if (m_CapturedKeyCombo == settings.StartRecording)
+            {
+                if (!m_RecordingSession.IsRecording() &&
+                    !m_RecordingSession.IsWaitingForDelay() &&
+                    strnlen(m_RecordingName, sizeof(m_RecordingName)) > 0)
+                {
+                    m_RecordingSession.Start({ m_RecordingName, m_RecordMouseMovement, m_InitialDelay });
+                    return false;
+                }
+            }
+
+            if (m_CapturedKeyCombo == settings.StopRecording)
+			{
+                if (!m_RecordingSession.IsRecording() || m_RecordingSession.IsWaitingForDelay())
+				{
+				    m_RecordingSession.Stop();
+				    return false;
+				}
+			}
+
             m_RecordingSession.OnKeyPressed(event);
             return false;
             });
 
         dispatcher.Dispatch<KeyReleasedEvent>([this](KeyReleasedEvent& event) {
+            
+            if (m_CapturedKeyCombo.Contains(event.GetKeyCode()))
+			{
+				m_CapturedKeyCombo.Remove(event.GetKeyCode());
+			}
+
             m_RecordingSession.OnKeyReleased(event);
             return false;
             });

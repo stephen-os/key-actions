@@ -2,6 +2,8 @@
 
 #include "Lumina/Core/Layer.h"
 
+#include "Lumina/Input/GlobalInputCapture.h"
+
 #include "KeyActions/UI/Tab.h"
 
 #include <memory>
@@ -21,6 +23,8 @@ namespace KeyActions
         virtual void OnUIRender() override;
 
     private:
+        std::unique_ptr<Lumina::GlobalInputCapture> m_GlobalInputCapture;
+
         std::vector<std::shared_ptr<Tab>> m_Tabs;
 
 		size_t m_ActiveTabIndex = 0;

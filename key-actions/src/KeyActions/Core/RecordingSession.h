@@ -2,8 +2,6 @@
 
 #include "Recording.h"
 
-#include "Lumina/Input/GlobalInputCapture.h"
-
 #include "Lumina/Events/GlobalKeyEvent.h"
 #include "Lumina/Events/GlobalMouseEvent.h"
 
@@ -67,8 +65,6 @@ namespace KeyActions
         void SetRecordingStoppedCallback(RecordingStateCallback callback);
 
     private:
-        std::unique_ptr<Lumina::GlobalInputCapture> m_GlobalInputCapture;
-
         bool m_IsRecording = false;
         bool m_IsWaitingForDelay = false;
         float m_DelayTimer = 0.0f;

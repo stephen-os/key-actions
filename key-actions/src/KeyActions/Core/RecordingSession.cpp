@@ -6,15 +6,7 @@
 
 namespace KeyActions
 {
-    RecordingSession::RecordingSession()
-    {
-        m_GlobalInputCapture = Lumina::GlobalInputCapture::Create();
-
-        if (!m_GlobalInputCapture)
-        {
-            LUMINA_LOG_ERROR("Failed to create GlobalInputCapture - platform not supported");
-        }
-    }
+    RecordingSession::RecordingSession() { }
 
     RecordingSession::~RecordingSession()
     {
@@ -22,21 +14,10 @@ namespace KeyActions
         {
             Stop();
         }
-
-        if (m_GlobalInputCapture && m_GlobalInputCapture->IsActive())
-        {
-            m_GlobalInputCapture->Stop();
-        }
     }
 
     bool RecordingSession::Start(const RecordingSettings& settings)
     {
-        if (!m_GlobalInputCapture)
-        {
-            LUMINA_LOG_ERROR("GlobalInputCapture not available");
-            return false;
-        }
-
         if (m_IsRecording || m_IsWaitingForDelay)
         {
             LUMINA_LOG_WARN("Already recording");
@@ -52,14 +33,6 @@ namespace KeyActions
         m_Settings = settings;
 
         m_CurrentRecording = Recording(settings.Name, settings.RecordMouseMovement);
-
-        m_GlobalInputCapture->SetPostEventsToApplication(true);
-
-        if (!m_GlobalInputCapture->Start())
-        {
-            LUMINA_LOG_ERROR("Failed to start global input capture");
-            return false;
-        }
 
         if (settings.InitialDelaySeconds > 0)
         {
@@ -92,20 +65,11 @@ namespace KeyActions
             m_IsWaitingForDelay = false;
             LUMINA_LOG_INFO("Recording cancelled (was waiting for delay)");
 
-            if (m_GlobalInputCapture)
-            {
-                m_GlobalInputCapture->Stop();
-            }
             return;
         }
 
         m_IsRecording = false;
         m_CurrentRecording.TotalDuration = Lumina::Application::GetTime() - m_RecordingStartTime;
-
-        if (m_GlobalInputCapture)
-        {
-            m_GlobalInputCapture->Stop();
-        }
 
         LUMINA_LOG_INFO("Recording stopped: {} (Duration: {}s, Events: {})",
             m_CurrentRecording.Name,
@@ -125,11 +89,6 @@ namespace KeyActions
 
         m_IsRecording = false;
         m_IsWaitingForDelay = false;
-
-        if (m_GlobalInputCapture)
-        {
-            m_GlobalInputCapture->Stop();
-        }
 
         m_CurrentRecording = Recording();
 

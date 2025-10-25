@@ -7,6 +7,7 @@
 #include "KeyActions/Core/Settings.h"
 
 #include "Lumina/Core/Log.h"
+#include "Lumina/Core/Assert.h"
 
 #include "KeyActions/UI/Styles/Theme.h"
 
@@ -16,6 +17,12 @@ namespace KeyActions
 
     void KeyActionsLayer::OnAttach()
     {
+        m_GlobalInputCapture = Lumina::GlobalInputCapture::Create();
+        LUMINA_ASSERT(m_GlobalInputCapture, "Failed to create global input capture");
+
+        m_GlobalInputCapture->SetPostEventsToApplication(true);
+        m_GlobalInputCapture->Start();
+
         Settings::Init();
 
         UI::ApplyTheme(); 
@@ -49,6 +56,8 @@ namespace KeyActions
 
         Settings::Shutdown();
 
+        m_GlobalInputCapture->Stop();
+	
         LUMINA_LOG_INFO("KeyActions layer detached");
     }
 

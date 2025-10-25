@@ -9,11 +9,15 @@
 #include "Lumina/Events/GlobalKeyEvent.h"
 #include "Lumina/Events/GlobalMouseEvent.h"
 
+#include "Lumina/Core/Input.h"
+
 namespace KeyActions
 {
     class RecordingTab : public Tab
     {
     public:
+        using KeyCombo = Lumina::KeyCombo;
+
         using KeyPressedEvent = Lumina::GlobalKeyPressedEvent;
 		using KeyReleasedEvent = Lumina::GlobalKeyReleasedEvent;
 
@@ -42,6 +46,8 @@ namespace KeyActions
         bool m_RecordMouseMovement = false;
         int m_InitialDelay = 0;
         bool m_ShowNameError = false;
+
+        KeyCombo m_CapturedKeyCombo;
 
         // Event panel for displaying recorded events
         EventPanel m_EventPanel;
