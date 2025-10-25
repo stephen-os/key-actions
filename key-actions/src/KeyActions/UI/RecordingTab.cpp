@@ -83,7 +83,7 @@ namespace KeyActions
 
             if (m_CapturedKeyCombo == settings.StopRecording)
 			{
-                if (!m_RecordingSession.IsRecording() || m_RecordingSession.IsWaitingForDelay())
+                if (m_RecordingSession.IsRecording() || m_RecordingSession.IsWaitingForDelay())
 				{
 				    m_RecordingSession.Stop();
 				    return false;
