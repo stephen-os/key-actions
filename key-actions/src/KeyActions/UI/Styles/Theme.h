@@ -78,12 +78,16 @@ namespace KeyActions::UI
 
     namespace Sizes
     {
+		// Button sizes
         inline constexpr ImVec2 ButtonTiny = ImVec2(80, 28);
         inline constexpr ImVec2 ButtonSmall = ImVec2(120, 32);
         inline constexpr ImVec2 ButtonMedium = ImVec2(150, 36);
         inline constexpr ImVec2 ButtonLarge = ImVec2(200, 40);
         inline constexpr ImVec2 ButtonWide = ImVec2(250, 36);
         inline constexpr ImVec2 ButtonFull = ImVec2(-1, 36);
+
+		// File dialog size
+        inline constexpr ImVec2 FileDialogMedium = ImVec2(500, 300);
     }
 
     namespace Rounding
