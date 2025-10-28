@@ -3,6 +3,17 @@
 #include "Lumina/Core/Log.h"
 #include "Lumina/Events/WindowKeyEvent.h"
 
+#include "KeyActions/UI/Styles/Theme.h"
+
+#include "KeyActions/UI/Components/Buttons.h"
+#include "KeyActions/UI/Components/Text.h"
+#include "KeyActions/UI/Components/Headings.h"
+#include "KeyActions/UI/Components/Layouts.h"
+#include "KeyActions/UI/Components/Keybinds.h"
+#include "KeyActions/UI/Components/Inputs.h"
+
+#include "Components/FileDialog.h"
+
 #include <ImGuiFileDialog.h>
 
 namespace KeyActions
@@ -105,215 +116,142 @@ namespace KeyActions
 
     void SettingsTab::OnRender()
     {
-        ImGui::BeginChild("SettingsPanel", ImVec2(0, 0), true);
+        UI::BeginPanel("SettingsPanel", ImVec2(0, 0), true);
 
-        ImGui::Text("Settings");
-        ImGui::Separator();
-        ImGui::Spacing();
+        UI::HeadingOne("Settings");
 
         auto& settings = Settings::GetMutable();
 
-        ImGui::Text("Recording Keybinds");
-        ImGui::Spacing();
+        UI::HeadingTwo("Recording Keybinds");
 
-        std::string startRecText = m_CapturingStartRecording ? "Press keys... (ESC to cancel)" : "Start Recording";
-        if (ImGui::Button(startRecText.c_str(), ImVec2(250, 0)))
+        UI::Spacing();
+\
+        if (UI::ButtonKeybind("Start Recording", m_CapturingStartRecording, m_CapturedKeys))
         {
             m_CapturingStartRecording = true;
+            m_CapturingStopRecording = false;
+            m_CapturingPlayRecording = false;
+            m_CapturingStopPlayback = false;
             m_CapturedKeys.clear();
         }
-        ImGui::SameLine();
         if (m_CapturingStartRecording && !m_CapturedKeys.empty())
         {
-            std::string keysText;
-            for (size_t i = 0; i < m_CapturedKeys.size(); i++)
-            {
-                keysText += Lumina::Input::KeyCodeToString(m_CapturedKeys[i]);
-                if (i < m_CapturedKeys.size() - 1)
-                    keysText += " + ";
-            }
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
-            ImGui::Text(": %s", keysText.c_str());
-            ImGui::PopStyleColor();
+            UI::DisplayKeybindCapturing(m_CapturedKeys);
         }
         else if (!settings.StartRecording.Keys.empty())
         {
-            std::string keysText;
-            for (size_t i = 0; i < settings.StartRecording.Keys.size(); i++)
-            {
-                keysText += Lumina::Input::KeyCodeToString(settings.StartRecording.Keys[i]);
-                if (i < settings.StartRecording.Keys.size() - 1)
-                    keysText += " + ";
-            }
-            ImGui::Text(": %s", keysText.c_str());
+            UI::DisplayKeybind(settings.StartRecording.Keys);
         }
 
-        std::string stopRecText = m_CapturingStopRecording ? "Press keys... (ESC to cancel)" : "Stop Recording";
-        if (ImGui::Button(stopRecText.c_str(), ImVec2(250, 0)))
+        UI::Spacing();
+
+        if (UI::ButtonKeybind("Stop Recording", m_CapturingStopRecording, m_CapturedKeys))
         {
+            m_CapturingStartRecording = false;
             m_CapturingStopRecording = true;
+            m_CapturingPlayRecording = false;
+            m_CapturingStopPlayback = false;
             m_CapturedKeys.clear();
         }
-        ImGui::SameLine();
         if (m_CapturingStopRecording && !m_CapturedKeys.empty())
         {
-            std::string keysText;
-            for (size_t i = 0; i < m_CapturedKeys.size(); i++)
-            {
-                keysText += Lumina::Input::KeyCodeToString(m_CapturedKeys[i]);
-                if (i < m_CapturedKeys.size() - 1)
-                    keysText += " + ";
-            }
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
-            ImGui::Text(": %s", keysText.c_str());
-            ImGui::PopStyleColor();
+            UI::DisplayKeybindCapturing(m_CapturedKeys);
         }
         else if (!settings.StopRecording.Keys.empty())
         {
-            std::string keysText;
-            for (size_t i = 0; i < settings.StopRecording.Keys.size(); i++)
-            {
-                keysText += Lumina::Input::KeyCodeToString(settings.StopRecording.Keys[i]);
-                if (i < settings.StopRecording.Keys.size() - 1)
-                    keysText += " + ";
-            }
-            ImGui::Text(": %s", keysText.c_str());
+            UI::DisplayKeybind(settings.StopRecording.Keys);
         }
 
-        ImGui::Spacing();
-        ImGui::Separator();
-        ImGui::Spacing();
+        UI::SectionSeparator();
 
-        ImGui::Text("Playback Keybinds");
-        ImGui::Spacing();
+        UI::HeadingTwo("Playback Keybinds");
 
-        std::string playRecText = m_CapturingPlayRecording ? "Press keys... (ESC to cancel)" : "Play Recording";
-        if (ImGui::Button(playRecText.c_str(), ImVec2(250, 0)))
+        UI::Spacing();
+
+        if (UI::ButtonKeybind("Play Recording", m_CapturingPlayRecording, m_CapturedKeys))
         {
+            m_CapturingStartRecording = false;
+            m_CapturingStopRecording = false;
             m_CapturingPlayRecording = true;
+            m_CapturingStopPlayback = false;
             m_CapturedKeys.clear();
         }
-        ImGui::SameLine();
         if (m_CapturingPlayRecording && !m_CapturedKeys.empty())
         {
-            std::string keysText;
-            for (size_t i = 0; i < m_CapturedKeys.size(); i++)
-            {
-                keysText += Lumina::Input::KeyCodeToString(m_CapturedKeys[i]);
-                if (i < m_CapturedKeys.size() - 1)
-                    keysText += " + ";
-            }
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
-            ImGui::Text(": %s", keysText.c_str());
-            ImGui::PopStyleColor();
+            UI::DisplayKeybindCapturing(m_CapturedKeys);
         }
         else if (!settings.PlayRecording.Keys.empty())
         {
-            std::string keysText;
-            for (size_t i = 0; i < settings.PlayRecording.Keys.size(); i++)
-            {
-                keysText += Lumina::Input::KeyCodeToString(settings.PlayRecording.Keys[i]);
-                if (i < settings.PlayRecording.Keys.size() - 1)
-                    keysText += " + ";
-            }
-            ImGui::Text(": %s", keysText.c_str());
+            UI::DisplayKeybind(settings.PlayRecording.Keys);
         }
 
-        std::string stopPlayText = m_CapturingStopPlayback ? "Press keys... (ESC to cancel)" : "Stop Playback";
-        if (ImGui::Button(stopPlayText.c_str(), ImVec2(250, 0)))
+        UI::Spacing();
+
+        if (UI::ButtonKeybind("Stop Playback", m_CapturingStopPlayback, m_CapturedKeys))
         {
+            m_CapturingStartRecording = false;
+            m_CapturingStopRecording = false;
+            m_CapturingPlayRecording = false;
             m_CapturingStopPlayback = true;
             m_CapturedKeys.clear();
         }
-        ImGui::SameLine();
         if (m_CapturingStopPlayback && !m_CapturedKeys.empty())
         {
-            std::string keysText;
-            for (size_t i = 0; i < m_CapturedKeys.size(); i++)
-            {
-                keysText += Lumina::Input::KeyCodeToString(m_CapturedKeys[i]);
-                if (i < m_CapturedKeys.size() - 1)
-                    keysText += " + ";
-            }
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
-            ImGui::Text(": %s", keysText.c_str());
-            ImGui::PopStyleColor();
+            UI::DisplayKeybindCapturing(m_CapturedKeys);
         }
         else if (!settings.StopPlayback.Keys.empty())
         {
-            std::string keysText;
-            for (size_t i = 0; i < settings.StopPlayback.Keys.size(); i++)
-            {
-                keysText += Lumina::Input::KeyCodeToString(settings.StopPlayback.Keys[i]);
-                if (i < settings.StopPlayback.Keys.size() - 1)
-                    keysText += " + ";
-            }
-            ImGui::Text(": %s", keysText.c_str());
+            UI::DisplayKeybind(settings.StopPlayback.Keys);
         }
 
-        ImGui::Spacing();
-        ImGui::Separator();
-        ImGui::Spacing();
+        UI::SectionSeparator();
 
-        ImGui::Text("Application Settings");
-        ImGui::Spacing();
+        UI::HeadingTwo("Application Settings");
 
-        ImGui::Text("Recordings Folder:");
-        ImGui::Text("%s", settings.RecordingsFolder.string().c_str());
+        UI::Spacing();
 
-        if (ImGui::Button("Browse...", ImVec2(150, 0)))
-        {
-            IGFD::FileDialogConfig config;
-            config.path = settings.RecordingsFolder.string();
-            config.flags = ImGuiFileDialogFlags_Modal;
-            ImGuiFileDialog::Instance()->OpenDialog("ChooseRecordingsFolder", "Choose Recordings Folder", nullptr, config);
-        }
+        UI::Label("Recordings Folder:");
         
-        if (ImGuiFileDialog::Instance()->Display("ChooseRecordingsFolder", ImGuiWindowFlags_NoResize, { 500, 300 }, { 500, 300 }))
+        UI::TextHighlight("%s", settings.RecordingsFolder.string().c_str());
+
+        std::string folderPathStr = settings.RecordingsFolder.string();
+        if (UI::FileDialogFolder("ChooseRecordingsFolder", "Choose Recordings Folder", folderPathStr))
         {
-            if (ImGuiFileDialog::Instance()->IsOk())
-            {
-                std::string folderPath = ImGuiFileDialog::Instance()->GetFilePathName();
-                settings.RecordingsFolder = folderPath;
-            }
-            ImGuiFileDialog::Instance()->Close();
+            settings.RecordingsFolder = folderPathStr;
         }
 
         if (!std::filesystem::exists(settings.RecordingsFolder))
         {
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.8f, 0.0f, 1.0f));
-            ImGui::Text("Warning: Directory does not exist. It will be created when saving.");
-            ImGui::PopStyleColor();
+            UI::Spacing();
+            UI::TextWarning("Warning: Directory does not exist. It will be created when saving.");
         }
 
-        ImGui::Spacing();
+        UI::Spacing();
 
-        if (ImGui::Checkbox("Auto Save Enabled", &m_AutoSaveEnabledBuffer))
+        if (UI::CheckboxStyled("Auto Save Enabled", &m_AutoSaveEnabledBuffer))
         {
             settings.AutoSaveEnabled = m_AutoSaveEnabledBuffer;
         }
 
-        ImGui::Text("Auto Save Interval (seconds):");
-        if (ImGui::SliderInt("##AutoSaveInterval", &m_AutoSaveIntervalBuffer, 10, 3600))
+        UI::Spacing();
+
+        UI::Label("Auto Save Interval (seconds):");
+        if (UI::SliderIntStyled("##AutoSaveInterval", &m_AutoSaveIntervalBuffer, 10, 3600))
         {
             settings.AutoSaveIntervalSeconds = m_AutoSaveIntervalBuffer;
         }
 
-        ImGui::Spacing();
-        ImGui::Separator();
-        ImGui::Spacing();
+        UI::SectionSeparator();
 
         bool hasChanges = Settings::IsModified();
 
         if (hasChanges)
         {
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.8f, 0.0f, 1.0f));
-            ImGui::Text("You have unsaved changes");
-            ImGui::PopStyleColor();
+            UI::TextWarning("You have unsaved changes");
+            UI::Spacing();
         }
 
-        ImGui::BeginDisabled(!hasChanges);
-        if (ImGui::Button("Save Settings", ImVec2(150, 40)))
+        if (UI::ButtonSuccess("Save Settings", UI::Sizes::ButtonWide, hasChanges))
         {
             if (Settings::Save())
             {
@@ -326,12 +264,10 @@ namespace KeyActions
                 m_ValidationError = "Failed to save settings";
             }
         }
-        ImGui::EndDisabled();
 
-        ImGui::SameLine();
+        UI::SameLine();
 
-        ImGui::BeginDisabled(!hasChanges);
-        if (ImGui::Button("Revert All", ImVec2(150, 40)))
+        if (UI::ButtonDanger("Revert All", UI::Sizes::ButtonWide, hasChanges))
         {
             Settings::Load();
 
@@ -341,16 +277,13 @@ namespace KeyActions
 
             LUMINA_LOG_INFO("Settings reverted to last saved state");
         }
-        ImGui::EndDisabled();
 
         if (!m_ValidationError.empty())
         {
-            ImGui::Spacing();
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-            ImGui::Text("%s", m_ValidationError.c_str());
-            ImGui::PopStyleColor();
+            UI::Spacing();
+            UI::TextDanger("%s", m_ValidationError.c_str());
         }
 
-        ImGui::EndChild();
+        UI::EndPanel();
     }
 }

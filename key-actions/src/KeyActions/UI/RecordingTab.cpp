@@ -4,9 +4,14 @@
 
 #include "KeyActions/Core/Settings.h"
 
-#include "Styles/Theme.h"
-#include "Styles/StyledWidgets.h"
-#include "Styles/WidgetVariants.h"
+#include "KeyActions/UI/Styles/Theme.h"
+
+#include "KeyActions/UI/Components/Buttons.h"
+#include "KeyActions/UI/Components/Text.h"
+#include "KeyActions/UI/Components/Headings.h"
+#include "KeyActions/UI/Components/Layouts.h"
+#include "KeyActions/UI/Components/Keybinds.h"
+#include "KeyActions/UI/Components/Inputs.h"
 
 #include <cstring>
 
@@ -135,7 +140,7 @@ namespace KeyActions
 
         BeginPanel("RecordControls", ImVec2(320, 0), true);
 
-        Heading2("Recording Settings");
+        HeadingTwo("Recording Settings");
 
         Label("Name of Recording:");
         InputTextStyled("##RecordingName", m_RecordingName, sizeof(m_RecordingName));
@@ -159,12 +164,12 @@ namespace KeyActions
         bool isRecording = m_RecordingSession.IsRecording();
         bool isWaiting = m_RecordingSession.IsWaitingForDelay();
 
-        if (ButtonStartRecording(!isRecording && !isWaiting))
+        if (ButtonSuccess("Start Recording", Sizes::ButtonFull, (!isRecording && !isWaiting)))
         {
             StartRecording();
         }
 
-        if (ButtonStopRecording(isRecording || isWaiting))
+        if (ButtonDanger("Stop Recording", Sizes::ButtonFull, (isRecording || isWaiting)))
         {
             StopRecording();
         }
@@ -187,7 +192,7 @@ namespace KeyActions
         
         BeginPanel("RecordEventPanel", ImVec2(0, 0), true);
 
-        Heading2("Recorded Events");
+        HeadingTwo("Recorded Events");
 
         Spacing(); 
 
