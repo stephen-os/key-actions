@@ -136,69 +136,69 @@ namespace KeyActions
 
     void RecordingTab::OnRender()
     {
-        using namespace UI;
+        UI::BeginPanel("RecordControls", ImVec2(320, 0), true);
 
-        BeginPanel("RecordControls", ImVec2(320, 0), true);
+        UI::HeadingTwo("Recording Settings");
 
-        HeadingTwo("Recording Settings");
-
-        Label("Name of Recording:");
-        InputTextStyled("##RecordingName", m_RecordingName, sizeof(m_RecordingName));
+        UI::Label("Name of Recording:");
+        
+        UI::InputText("##RecordingName", m_RecordingName, sizeof(m_RecordingName));
 
         if (m_ShowNameError)
         {
-            TextDanger("Name cannot be blank!");
+            UI::TextDanger("Name cannot be blank!");
         }
 
-		Spacing();
+        UI::Spacing();
 
-        CheckboxStyled("Record Mouse Movement", &m_RecordMouseMovement);
+        UI::Checkbox("Record Mouse Movement", &m_RecordMouseMovement);
 
-		Spacing();
+        UI::Spacing();
 
-        Label("Delay (seconds):");
-        SliderIntStyled("##InitialDelay", &m_InitialDelay, 0, 10);
+        UI::Label("Delay (seconds):");
 
-        SectionSeparator();
+        UI::SliderInt("##InitialDelay", &m_InitialDelay, 0, 10);
+
+        UI::SectionSeparator();
 
         bool isRecording = m_RecordingSession.IsRecording();
         bool isWaiting = m_RecordingSession.IsWaitingForDelay();
 
-        if (ButtonSuccess("Start Recording", Sizes::ButtonFull, (!isRecording && !isWaiting)))
+        if (UI::ButtonSuccess("Start Recording", UI::Sizes::ButtonFull, (!isRecording && !isWaiting)))
         {
             StartRecording();
         }
 
-        if (ButtonDanger("Stop Recording", Sizes::ButtonFull, (isRecording || isWaiting)))
+        if (UI::ButtonDanger("Stop Recording", UI::Sizes::ButtonFull, (isRecording || isWaiting)))
         {
             StopRecording();
         }
 
-        Spacing(); 
+        UI::Spacing();
 
         if (isWaiting)
         {
-            TextWarning("Recording starts in %.1f seconds...", m_RecordingSession.GetDelayTimeRemaining());
+            UI::TextWarning("Recording starts in %.1f seconds...", m_RecordingSession.GetDelayTimeRemaining());
         }
         else if (isRecording)
         {
-            TextHighlight("Recording... %.2fs", m_RecordingSession.GetElapsedTime());
-            TextMuted("Events recorded: %zu", m_RecordingSession.GetEventCount());
+            UI::TextHighlight("Recording... %.2fs", m_RecordingSession.GetElapsedTime());
+            UI::TextMuted("Events recorded: %zu", m_RecordingSession.GetEventCount());
         }
 
-        EndPanel();
+        UI::EndPanel();
 
-        SameLine(); 
+        UI::SameLine();
         
-        BeginPanel("RecordEventPanel", ImVec2(0, 0), true);
+        UI::BeginPanel("RecordEventPanel", ImVec2(0, 0), true);
 
-        HeadingTwo("Recorded Events");
+        UI::HeadingTwo("Recorded Events");
 
-        Spacing(); 
+        UI::Spacing();
 
         m_EventPanel.Render(ImVec2(0, 0));
 
-        EndPanel();
+        UI::EndPanel();
     }
 
     void RecordingTab::StartRecording()

@@ -7,7 +7,7 @@
 
 namespace KeyActions::UI
 {
-    inline bool InputTextStyled(std::string_view label, char* buf, size_t buf_size, ImGuiInputTextFlags flags = 0)
+    inline bool InputText(std::string_view label, char* buf, size_t buf_size, ImGuiInputTextFlags flags = 0)
     {
         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, Rounding::Small);
         ImGui::PushStyleColor(ImGuiCol_FrameBg, Colors::FrameBg);
@@ -21,7 +21,7 @@ namespace KeyActions::UI
         return result;
     }
 
-    inline bool CheckboxStyled(std::string_view label, bool* v)
+    inline bool Checkbox(std::string_view label, bool* v)
     {
         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, Rounding::Small);
         ImGui::PushStyleColor(ImGuiCol_CheckMark, Colors::CheckMark);
@@ -33,7 +33,7 @@ namespace KeyActions::UI
         return result;
     }
 
-    inline bool SliderIntStyled(std::string_view label, int* v, int min, int max, std::string_view format = "%d")
+    inline bool SliderInt(std::string_view label, int* v, int min, int max, std::string_view format = "%d")
     {
         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, Rounding::Small);
         ImGui::PushStyleColor(ImGuiCol_SliderGrab, Colors::SliderGrab);
@@ -46,7 +46,7 @@ namespace KeyActions::UI
         return result;
     }
 
-    inline bool SliderFloatStyled(std::string_view label, float* v, float min, float max, std::string_view format = "%.3f")
+    inline bool SliderFloat(std::string_view label, float* v, float min, float max, std::string_view format = "%.3f")
     {
         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, Rounding::Small);
         ImGui::PushStyleColor(ImGuiCol_SliderGrab, Colors::SliderGrab);

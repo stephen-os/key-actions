@@ -228,7 +228,7 @@ namespace KeyActions
 
         UI::Spacing();
 
-        if (UI::CheckboxStyled("Auto Save Enabled", &m_AutoSaveEnabledBuffer))
+        if (UI::Checkbox("Auto Save Enabled", &m_AutoSaveEnabledBuffer))
         {
             settings.AutoSaveEnabled = m_AutoSaveEnabledBuffer;
         }
@@ -236,7 +236,7 @@ namespace KeyActions
         UI::Spacing();
 
         UI::Label("Auto Save Interval (seconds):");
-        if (UI::SliderIntStyled("##AutoSaveInterval", &m_AutoSaveIntervalBuffer, 10, 3600))
+        if (UI::SliderInt("##AutoSaveInterval", &m_AutoSaveIntervalBuffer, 10, 3600))
         {
             settings.AutoSaveIntervalSeconds = m_AutoSaveIntervalBuffer;
         }
