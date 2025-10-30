@@ -9,7 +9,7 @@ namespace KeyActions::UI
 {
     inline void BeginPanel(std::string_view label, const ImVec2& size = ImVec2(0, 0), bool border = true)
     {
-        ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, Rounding::Medium);
+        ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, Rounding::None);
         ImGui::PushStyleColor(ImGuiCol_ChildBg, Colors::Panel);
         ImGui::PushStyleColor(ImGuiCol_Border, Colors::PanelBorder);
         ImGui::BeginChild(label.data(), size, border);
@@ -36,8 +36,8 @@ namespace KeyActions::UI
         ImGui::Spacing();
     }
 
-    inline void SameLine()
+    inline void SameLine(float offsetFromStart = 0.0f, float spacing = 0.0f)
     {
-        ImGui::SameLine();
+        ImGui::SameLine(offsetFromStart, spacing);
     }
 }

@@ -136,7 +136,7 @@ namespace KeyActions
 
     void RecordingTab::OnRender()
     {
-        UI::BeginPanel("RecordControls", ImVec2(320, 0), true);
+        UI::BeginPanel("RecordControls", ImVec2(320, 0));
 
         UI::HeadingTwo("Recording Settings");
 
@@ -190,7 +190,7 @@ namespace KeyActions
 
         UI::SameLine();
         
-        UI::BeginPanel("RecordEventPanel", ImVec2(0, 0), true);
+        UI::BeginPanel("RecordEventPanel", ImVec2(0, 0));
 
         UI::HeadingTwo("Recorded Events");
 

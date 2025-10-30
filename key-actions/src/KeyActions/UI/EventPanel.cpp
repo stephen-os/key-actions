@@ -1,7 +1,10 @@
 #include "EventPanel.h"
 
 #include "Lumina/Core/Input.h"
-#include "Styles/StyledWidgets.h"
+
+#include "KeyActions/UI/Components/Buttons.h"
+#include "KeyActions/UI/Components/Layouts.h"
+
 #include "Styles/Theme.h"
 
 #include <sstream>
@@ -58,8 +61,6 @@ namespace KeyActions
 
     void EventPanel::RenderEvent(const RecordedEvent& event, int index)
     {
-        using namespace UI;
-
         ImGui::PushID(index);
 
         int minutes = static_cast<int>(event.Time) / 60;
@@ -72,23 +73,14 @@ namespace KeyActions
             << std::setw(3) << milliseconds;
 
         ImVec4 color = GetEventColor(event.Action);
-        ImVec4 hoverColor = ImVec4(
-            std::min(color.x * 1.2f, 1.0f),
-            std::min(color.y * 1.2f, 1.0f),
-            std::min(color.z * 1.2f, 1.0f),
-            1.0f
-        );
 
-        ImGui::PushStyleColor(ImGuiCol_Button, color);
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor);
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, color);
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, Rounding::Small);
+        UI::ButtonColored(timeStr.str(), color, ImVec2(90, 26));
+  
+		UI::SameLine(0.0f, -1.0f);
 
-        ImGui::Button(timeStr.str().c_str(), ImVec2(90, 26));
-        ImGui::SameLine();
-
-        ImGui::Button(GetEventIcon(event.Action), ImVec2(90, 26));
-        ImGui::SameLine();
+        UI::ButtonColored(GetEventIcon(event.Action), color, ImVec2(90, 26));
+        
+        UI::SameLine(0.0f, -1.0f);
 
         std::string details;
         switch (event.Action)
@@ -124,20 +116,14 @@ namespace KeyActions
         }
         }
 
-        ImGui::Button(details.c_str(), ImVec2(-1, 26));
+        UI::ButtonColored(details, color, ImVec2(-1, 26));
 
-        ImGui::PopStyleVar();
-        ImGui::PopStyleColor(3);
         ImGui::PopID();
     }
 
     void EventPanel::Render(const ImVec2& size)
     {
-        using namespace UI;
-
-        ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, Rounding::Small);
-        ImGui::PushStyleColor(ImGuiCol_ChildBg, Colors::BackgroundDark);
-        ImGui::BeginChild("EventPanelEvents", ImVec2(size.x, size.y - 45), true);
+        UI::BeginPanel("EventPanelEvents", ImVec2(size.x, size.y - 45), true);
 
         for (size_t i = 0; i < m_Events.size(); i++)
         {
@@ -147,11 +133,9 @@ namespace KeyActions
         if (m_AutoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
             ImGui::SetScrollHereY(1.0f);
 
-        ImGui::EndChild();
-        ImGui::PopStyleColor();
-        ImGui::PopStyleVar();
+        UI::EndPanel();
 
-        if (ButtonDanger("Clear Events", Sizes::ButtonFull))
+        if (UI::ButtonClear())
         {
             Clear();
         }
