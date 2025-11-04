@@ -22,7 +22,9 @@ project "KeyActions"
       "%{wks.location}/lumina/dependencies/glad/include",
       "%{wks.location}/lumina/dependencies/tinygltf",
       "%{wks.location}/lumina/dependencies/imguifd",
-      "%{wks.location}/lumina/dependencies/spdlog/include"
+      "%{wks.location}/lumina/dependencies/spdlog/include",
+      "%{wks.location}/lumina/dependencies/imgui-node-editor",
+      "%{wks.location}/lumina/dependencies/imgui-node-editor/external/DXSDK/include"
    }
 
    links
