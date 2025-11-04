@@ -4,6 +4,9 @@
 #include "KeyActions/UI/PlaybackTab.h"
 #include "KeyActions/UI/SettingsTab.h"
 
+// Testing
+#include "KeyActions/UI/NodeEditorTab.h"
+
 #include "KeyActions/Core/Settings.h"
 
 #include "Lumina/Core/Log.h"
@@ -30,10 +33,12 @@ namespace KeyActions
         auto recordingTab = std::make_shared<RecordingTab>();
         auto playbackTab = std::make_shared<PlaybackTab>();
         auto settingsTab = std::make_shared<SettingsTab>();
+		auto nodeEditorTab = std::make_shared<NodeEditorTab>();
 
         m_Tabs.push_back(recordingTab);
         m_Tabs.push_back(playbackTab);
         m_Tabs.push_back(settingsTab);
+		m_Tabs.push_back(nodeEditorTab); // Testing
 
         for (auto& tab : m_Tabs)
         {
