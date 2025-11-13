@@ -9,8 +9,9 @@ namespace KeyActions
     class MousePressNode : public Node
     {
     public:
-        static Lumina::Ref<MousePressNode> Create(Lumina::MouseCode button);
-        MousePressNode(Lumina::MouseCode button);
+        static Lumina::Ref<MousePressNode> Create(Lumina::MouseCode button, int x, int y);
+        
+        MousePressNode(Lumina::MouseCode button, int x, int y);
 
 		NodePtr Execute(Lumina::GlobalInputPlayback* playback) override;
 
@@ -20,9 +21,10 @@ namespace KeyActions
 
         Lumina::MouseCode GetButton() const;
 
-        void SetModifiers(bool shift, bool ctrl, bool alt, bool super);
-
     private:
         Lumina::MouseCode m_Button;
+
+		int m_X = 0;
+		int m_Y = 0;
     };
 }

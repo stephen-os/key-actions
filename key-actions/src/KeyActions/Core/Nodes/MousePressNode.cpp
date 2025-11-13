@@ -4,11 +4,16 @@
 
 namespace KeyActions
 {
-
-    MousePressNode::MousePressNode(Lumina::MouseCode button)
-        : Node("MousePress"), m_Button(button)
+    Lumina::Ref<MousePressNode> Create(Lumina::MouseCode button, int x, int y)
     {
-        m_Name = "Press Mouse " + std::to_string(static_cast<int>(button));
+        return Lumina::CreateRef<MousePressNode>(button, x, y);
+	}
+
+    MousePressNode::MousePressNode(Lumina::MouseCode button, int x, int y) 
+		: Node("MousePress"), m_Button(button), m_X(x), m_Y(y)
+    {
+        m_Name = "Press Mouse " + std::to_string(static_cast<int>(button)) + " at location " +
+            std::to_string(x) + "," + std::to_string(y);
     }
 
     Node::NodePtr MousePressNode::Execute(Lumina::GlobalInputPlayback* playback)
