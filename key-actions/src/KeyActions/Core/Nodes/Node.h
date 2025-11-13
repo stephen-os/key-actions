@@ -21,6 +21,11 @@ namespace KeyActions
         Start = 0,
         KeyPress,
         KeyRelease,
+
+		MouseMove,
+		MousePress,
+		MouseRelease,
+		MouseScroll,
     };
 
     enum class PinType
