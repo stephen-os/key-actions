@@ -110,18 +110,18 @@ namespace KeyActions
             return false;
         }
 
-        static NE::LinkId ConnectPin(NodePtr fromNode, PinType fromPinType, NodePtr toNode, PinType toPinType)
+        static bool ConnectNodes(NodePtr fromNode, PinType fromPinType, NodePtr toNode, PinType toPinType)
         {
 			LUMINA_ASSERT(fromNode != nullptr, "ConnectPin: fromNode is null");
             LUMINA_ASSERT(toNode != nullptr, "ConnectPin: toNode is null");
 
 			// Do both nodes have the specified pins?
             if (fromNode->HasPin(fromPinType) == false || toNode->HasPin(toPinType) == false)
-				return NE::LinkId(LINK_ID_NONE);
+				return false;
 
 			// Can we connect these pin types?
             if (!(fromNode->CanConnect(fromPinType, toPinType) && toNode->CanConnect(toPinType, fromPinType)))
-				return NE::LinkId(LINK_ID_NONE);
+				return false;
 
 			Pin* fromNodePin = fromNode->GetPin(fromPinType);
             Pin* toNodePin = toNode->GetPin(toPinType);
@@ -130,10 +130,10 @@ namespace KeyActions
 
 			// We must disconnect existing connections first
             if (fromNodePin->ConnectedNode && fromNodePin->LinkId.Get() != LINK_ID_NONE)
-                DisconnectPin(fromNode, fromPinType);
+                DisconnectNodes(fromNode, fromPinType);
 
 			if (toNodePin->ConnectedNode && toNodePin->LinkId.Get() != LINK_ID_NONE)
-				DisconnectPin(toNode, toPinType);
+                DisconnectNodes(toNode, toPinType);
 
             auto linkId = NE::LinkId(Lumina::UUID::Generate());
 
@@ -156,10 +156,10 @@ namespace KeyActions
             LUMINA_LOG_INFO("Target Pin ID:         {}", toNodePin->Id.Get());
             LUMINA_LOG_INFO("Target Pin Link ID:    {}", toNodePin->LinkId.Get());
 
-			return linkId;
+			return true;
         }
 
-        static bool DisconnectPin(NodePtr fromNode, PinType fromPinType)
+        static bool DisconnectNodes(NodePtr fromNode, PinType fromPinType)
         {
             LUMINA_ASSERT(fromNode != nullptr, "DisconnectPin: node is null");
 
