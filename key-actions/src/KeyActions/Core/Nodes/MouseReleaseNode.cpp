@@ -7,7 +7,6 @@ namespace KeyActions
         return Lumina::CreateRef<MouseReleaseNode>(button, x, y);
     }
 
-
     MouseReleaseNode::MouseReleaseNode(Lumina::MouseCode button, int x, int y)
         : Node("MouseRelease"), m_Button(button), m_X(x), m_Y(y)
     {
@@ -18,7 +17,7 @@ namespace KeyActions
         AddPin(CreatePin("Output", PinType::Output));
 	}
 
-    NodePtr MouseReleaseNode::Execute(Lumina::GlobalInputPlayback* playback)
+    Node::NodePtr MouseReleaseNode::Execute(Lumina::GlobalInputPlayback* playback)
     {
         LUMINA_ASSERT(playback != nullptr, "MouseReleaseNode: Playback system is null in MouseReleaseNode execution");
         
@@ -32,6 +31,15 @@ namespace KeyActions
 
         return nullptr;
 	}
+
+    bool MouseReleaseNode::CanConnect(PinType sourceType, PinType targetType)
+    {
+        // Rule: MouseReleaseNode allows bidirectional connections
+        // 1. Output pins can connect to Input pins
+        // 2. Input pins can connect to Output pins
+        return ((sourceType == PinType::Output && targetType == PinType::Input) ||
+            (sourceType == PinType::Input && targetType == PinType::Output));
+    }
 
     Lumina::MouseCode MouseReleaseNode::GetButton() const
     {
