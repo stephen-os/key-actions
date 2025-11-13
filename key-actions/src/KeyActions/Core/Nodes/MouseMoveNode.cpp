@@ -8,6 +8,9 @@ namespace KeyActions
         : Node("MouseMove"), m_X(x), m_Y(y)
     {
         m_Name = "Move Mouse to " + std::to_string(x) + ", " + std::to_string(y);
+
+		AddPin(CreatePin("Input", PinType::Input));
+		AddPin(CreatePin("Output", PinType::Output));
     }
 
     Node::NodePtr MouseMoveNode::Execute(Lumina::GlobalInputPlayback* playback)
