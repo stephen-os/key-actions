@@ -159,7 +159,7 @@ namespace KeyActions
 			return true;
         }
 
-        static bool DisconnectNodes(NodePtr fromNode, PinType fromPinType)
+        static bool DisconnectNode(NodePtr fromNode, PinType fromPinType)
         {
             LUMINA_ASSERT(fromNode != nullptr, "DisconnectPin: node is null");
 
