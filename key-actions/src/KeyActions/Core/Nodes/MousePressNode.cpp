@@ -14,13 +14,16 @@ namespace KeyActions
     {
         m_Name = "Press Mouse " + std::to_string(static_cast<int>(button)) + " at location " +
             std::to_string(x) + "," + std::to_string(y);
+
+		AddPin(CreatePin("Input", PinType::Input));
+		AddPin(CreatePin("Output", PinType::Output));
     }
 
     Node::NodePtr MousePressNode::Execute(Lumina::GlobalInputPlayback* playback)
     {
         LUMINA_ASSERT(playback != nullptr, "MousePressNode: Playback system is null in MousePressNode execution");
         
-		playback->SimulateMouseButtonPress(m_Button);
+		playback->SimulateMouseButtonPress(m_Button, m_X, m_Y);
         
         LUMINA_LOG_INFO("Simulated mouse press of {}", static_cast<int>(m_Button));
         Pin* outputPin = GetPin(PinType::Output);
@@ -41,10 +44,5 @@ namespace KeyActions
     Lumina::MouseCode MousePressNode::GetButton() const
     {
         return m_Button;
-    }
-
-    Lumina::Ref<MousePressNode> MousePressNode::Create(Lumina::MouseCode button)
-    {
-        return Lumina::CreateRef<MousePressNode>(button);
     }
 }
