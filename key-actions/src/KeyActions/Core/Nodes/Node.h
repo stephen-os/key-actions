@@ -110,72 +110,77 @@ namespace KeyActions
             return false;
         }
 
-        static bool ConnectNodes(NodePtr fromNode, PinType fromPinType, NodePtr toNode, PinType toPinType)
+        static bool ConnectPins(NodePtr nodeA, PinType pinAType , NodePtr nodeB, PinType pinBType)
         {
-			LUMINA_ASSERT(fromNode != nullptr, "ConnectPin: fromNode is null");
-            LUMINA_ASSERT(toNode != nullptr, "ConnectPin: toNode is null");
+			LUMINA_ASSERT(nodeA != nullptr, "ConnectPins: nodeA is null");
+            LUMINA_ASSERT(nodeB != nullptr, "ConnectPins: nodeB is null");
+
+			// Are the the same node?
+            if (nodeA->GetNodeID() == nodeB->GetNodeID())
+				return false;
 
 			// Do both nodes have the specified pins?
-            if (fromNode->HasPin(fromPinType) == false || toNode->HasPin(toPinType) == false)
+            if (nodeA->HasPin(pinAType) == false || nodeB->HasPin(pinBType) == false)
 				return false;
 
 			// Can we connect these pin types?
-            if (!(fromNode->CanConnect(fromPinType, toPinType) && toNode->CanConnect(toPinType, fromPinType)))
+            if (!(nodeA->CanConnect(pinAType, pinBType) && nodeB->CanConnect(pinBType, pinAType)))
 				return false;
 
-			Pin* fromNodePin = fromNode->GetPin(fromPinType);
-            Pin* toNodePin = toNode->GetPin(toPinType);
-			LUMINA_ASSERT(fromNodePin != nullptr, "ConnectPin: fromNodePin is null after HasPin check");
-			LUMINA_ASSERT(toNodePin != nullptr, "ConnectPin: toNodePin is null after HasPin check");
+			Pin* pinA = nodeA->GetPin(pinAType);
+            Pin* pinB = nodeB->GetPin(pinBType);
+			LUMINA_ASSERT(pinA != nullptr, "ConnectPins: pinA is null after HasPin check");
+			LUMINA_ASSERT(pinB != nullptr, "ConnectPins: pinB is null after HasPin check");
+
+			// Are the pins already connected?
+            if (pinA->LinkId.Get() != LINK_ID_NONE && pinA->LinkId == pinB->LinkId)
+                return true;
 
 			// We must disconnect existing connections first
-            if (fromNodePin->ConnectedNode && fromNodePin->LinkId.Get() != LINK_ID_NONE)
-                DisconnectNodes(fromNode, fromPinType);
-
-			if (toNodePin->ConnectedNode && toNodePin->LinkId.Get() != LINK_ID_NONE)
-                DisconnectNodes(toNode, toPinType);
+			DisconnectPin(nodeA, pinAType);
+			DisconnectPin(nodeB, pinBType);
 
             auto linkId = NE::LinkId(Lumina::UUID::Generate());
 
-			fromNodePin->ConnectedNode = toNode;
-			fromNodePin->LinkId = linkId;
+			pinA->ConnectedNode = nodeB;
+            pinA->LinkId = linkId;
 
-			toNodePin->ConnectedNode = fromNode;
-            toNodePin->LinkId = linkId;
+			pinB->ConnectedNode = nodeA;
+            pinB->LinkId = linkId;
             
             LUMINA_LOG_INFO("===================== Connection Established =====================");
             LUMINA_LOG_INFO("Link ID:               {}", linkId.Get());
-            LUMINA_LOG_INFO("Source Node Name:      {}", fromNode->GetName());
-            LUMINA_LOG_INFO("Source Node ID:        {}", fromNode->GetNodeID().Get());
-            LUMINA_LOG_INFO("Source Pin Name:       {}", fromNodePin->Name);
-            LUMINA_LOG_INFO("Source Pin ID:         {}", fromNodePin->Id.Get());
-            LUMINA_LOG_INFO("Source Pin Link ID:    {}", fromNodePin->LinkId.Get());
-            LUMINA_LOG_INFO("Target Node Name:      {}", toNode->GetName());
-            LUMINA_LOG_INFO("Target Node ID:        {}", toNode->GetNodeID().Get());
-            LUMINA_LOG_INFO("Target Pin Name:       {}", toNodePin->Name);
-            LUMINA_LOG_INFO("Target Pin ID:         {}", toNodePin->Id.Get());
-            LUMINA_LOG_INFO("Target Pin Link ID:    {}", toNodePin->LinkId.Get());
+            LUMINA_LOG_INFO("Source Node Name:      {}", nodeA->GetName());
+            LUMINA_LOG_INFO("Source Node ID:        {}", nodeA->GetNodeID().Get());
+            LUMINA_LOG_INFO("Source Pin Name:       {}", pinA->Name);
+            LUMINA_LOG_INFO("Source Pin ID:         {}", pinA->Id.Get());
+            LUMINA_LOG_INFO("Source Pin Link ID:    {}", pinA->LinkId.Get());
+            LUMINA_LOG_INFO("Target Node Name:      {}", nodeB->GetName());
+            LUMINA_LOG_INFO("Target Node ID:        {}", nodeB->GetNodeID().Get());
+            LUMINA_LOG_INFO("Target Pin Name:       {}", pinB->Name);
+            LUMINA_LOG_INFO("Target Pin ID:         {}", pinB->Id.Get());
+            LUMINA_LOG_INFO("Target Pin Link ID:    {}", pinB->LinkId.Get());
 
 			return true;
         }
 
-        static bool DisconnectNode(NodePtr fromNode, PinType fromPinType)
+        static bool DisconnectPin(NodePtr node, PinType pinType)
         {
-            LUMINA_ASSERT(fromNode != nullptr, "DisconnectPin: node is null");
+            LUMINA_ASSERT(node != nullptr, "DisconnectPin: node is null");
 
-            Node::Pin* sourcePin = fromNode->GetPin(fromPinType);
-            if (!sourcePin || !sourcePin->ConnectedNode)
+            Pin* sourcePin = node->GetPin(pinType);
+            if (!sourcePin || !sourcePin->ConnectedNode || sourcePin->LinkId.Get() == LINK_ID_NONE)
                 return false;
 
             NodePtr targetNode = sourcePin->ConnectedNode;
             NE::LinkId linkId = sourcePin->LinkId;
 
             Pin* targetPin = nullptr;
-            for (auto& pin : targetNode->GetPins())
+            for (auto& p : targetNode->GetPins())
             {
-                if (pin.LinkId == sourcePin->LinkId)
+                if (p.LinkId == sourcePin->LinkId)
                 {
-                    targetPin = &pin;
+                    targetPin = &p;
                     break;
                 }
             }
@@ -184,22 +189,21 @@ namespace KeyActions
 
             targetPin->ConnectedNode = nullptr;
             targetPin->LinkId = LINK_ID_NONE;
-
             sourcePin->ConnectedNode = nullptr;
             sourcePin->LinkId = LINK_ID_NONE;
 
             LUMINA_LOG_INFO("===================== Connection Removed =====================");
             LUMINA_LOG_INFO("Link ID:               {}", linkId.Get());
-            LUMINA_LOG_INFO("Source Node Name:      {}", fromNode->GetName());
-            LUMINA_LOG_INFO("Source Node ID:        {}", fromNode->GetNodeID().Get());
-            LUMINA_LOG_INFO("Source Pin Name:       {}", sourcePin->Name);
-            LUMINA_LOG_INFO("Source Pin ID:         {}", sourcePin->Id.Get());
-            LUMINA_LOG_INFO("Source Pin Link ID:    {}", LINK_ID_NONE);
-            LUMINA_LOG_INFO("Target Node Name:      {}", targetNode->GetName());
-            LUMINA_LOG_INFO("Target Node ID:        {}", targetNode->GetNodeID().Get());
-            LUMINA_LOG_INFO("Target Pin Name:       {}", targetPin->Name);
-            LUMINA_LOG_INFO("Target Pin ID:         {}", targetPin->Id.Get());
-            LUMINA_LOG_INFO("Target Pin Link ID:    {}", LINK_ID_NONE);
+            LUMINA_LOG_INFO("Node A Name:           {}", node->GetName());
+            LUMINA_LOG_INFO("Node A ID:             {}", node->GetNodeID().Get());
+            LUMINA_LOG_INFO("Pin A Name:            {}", sourcePin->Name);
+            LUMINA_LOG_INFO("Pin A ID:              {}", sourcePin->Id.Get());
+            LUMINA_LOG_INFO("Pin A Link ID:         {}", LINK_ID_NONE);
+            LUMINA_LOG_INFO("Node B Name:           {}", targetNode->GetName());
+            LUMINA_LOG_INFO("Node B ID:             {}", targetNode->GetNodeID().Get());
+            LUMINA_LOG_INFO("Pin B Name:            {}", targetPin->Name);
+            LUMINA_LOG_INFO("Pin B ID:              {}", targetPin->Id.Get());
+            LUMINA_LOG_INFO("Pin B Link ID:         {}", LINK_ID_NONE);
 
             return true;
         }
