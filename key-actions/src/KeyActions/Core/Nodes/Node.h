@@ -2,20 +2,25 @@
 
 #include <string>
 #include <unordered_map>
-#include "Lumina/Core/Base.h"
+
 #include "Lumina/Utils/UUID.h"
 #include "Lumina/Input/GlobalInputPlayback.h"
+
+#include "KeyActions/Core/Memory.h"
+
 #include <imgui_node_editor.h>
 #include <glm/vec2.hpp>
 
-namespace NE = ax::NodeEditor;
-
-#define NODE_ID_NONE 0
-#define PIN_ID_NONE 0
-#define LINK_ID_NONE 0
-
 namespace KeyActions
 {
+	using NodeID = ax::NodeEditor::NodeId;
+	using PinID = ax::NodeEditor::PinId;
+	using LinkID = ax::NodeEditor::LinkId;
+
+    inline constexpr uint64_t NODE_ID_NONE = 0;
+    inline constexpr uint64_t PIN_ID_NONE = 0;
+    inline constexpr uint64_t LINK_ID_NONE = 0;
+
     enum class NodeType
     {
         Start = 0,
@@ -38,15 +43,13 @@ namespace KeyActions
     class Node
     {
     public:
-        using NodePtr = Lumina::Ref<Node>;
-
         struct Pin
         {
-            NE::PinId Id = PIN_ID_NONE;
-            NE::LinkId LinkId = LINK_ID_NONE;
+            PinID Id = PIN_ID_NONE;
+            LinkID LinkId = LINK_ID_NONE;
             std::string Name = "*Unnamed Pin*";
             PinType Type = PinType::Undefined;
-            NodePtr ConnectedNode = nullptr;
+            Ref<Node> ConnectedNode = nullptr;
         };
 
         Node(const std::string& name) : m_Name(name), m_NodeId(Lumina::UUID::Generate()) {}
@@ -58,19 +61,19 @@ namespace KeyActions
             }
         }
 
-        virtual NodePtr Execute(Lumina::GlobalInputPlayback* playback) = 0;
+        virtual Ref<Node> Execute(Lumina::GlobalInputPlayback* playback) = 0;
         virtual NodeType GetType() const = 0;
 
         void SetName(const std::string& name) { m_Name = name; }
         const std::string& GetName() const { return m_Name; }
         
-        const NE::NodeId& GetNodeID() const { return m_NodeId; }
+        const NodeID& GetNodeID() const { return m_NodeId; }
        
         virtual bool CanConnect(PinType sourceType, PinType targetType) = 0;
 
         std::vector<Pin>& GetPins() { return m_Pins; }
 
-        Pin* GetPin(const NE::PinId& id)
+        Pin* GetPin(const PinID& id)
         {
             for (auto& pin : m_Pins)
             {
@@ -80,7 +83,7 @@ namespace KeyActions
             return nullptr;
         }
 
-        Pin* GetPin(const NE::LinkId& linkId)
+        Pin* GetPin(const LinkID& linkId)
         {
             for (auto& pin : m_Pins)
             {
@@ -110,7 +113,7 @@ namespace KeyActions
             return false;
         }
 
-        static bool ConnectPins(NodePtr nodeA, PinType pinAType , NodePtr nodeB, PinType pinBType)
+        static bool ConnectPins(Ref<Node> nodeA, PinType pinAType , Ref<Node> nodeB, PinType pinBType)
         {
 			LUMINA_ASSERT(nodeA != nullptr, "ConnectPins: nodeA is null");
             LUMINA_ASSERT(nodeB != nullptr, "ConnectPins: nodeB is null");
@@ -140,7 +143,7 @@ namespace KeyActions
 			DisconnectPin(nodeA, pinAType);
 			DisconnectPin(nodeB, pinBType);
 
-            auto linkId = NE::LinkId(Lumina::UUID::Generate());
+            auto linkId = LinkID(Lumina::UUID::Generate());
 
 			pinA->ConnectedNode = nodeB;
             pinA->LinkId = linkId;
@@ -164,7 +167,7 @@ namespace KeyActions
 			return true;
         }
 
-        static bool DisconnectPin(NodePtr node, PinType pinType)
+        static bool DisconnectPin(Ref<Node> node, PinType pinType)
         {
             LUMINA_ASSERT(node != nullptr, "DisconnectPin: node is null");
 
@@ -172,8 +175,8 @@ namespace KeyActions
             if (!sourcePin || !sourcePin->ConnectedNode || sourcePin->LinkId.Get() == LINK_ID_NONE)
                 return false;
 
-            NodePtr targetNode = sourcePin->ConnectedNode;
-            NE::LinkId linkId = sourcePin->LinkId;
+            Ref<Node> targetNode = sourcePin->ConnectedNode;
+            LinkID linkId = sourcePin->LinkId;
 
             Pin* targetPin = nullptr;
             for (auto& p : targetNode->GetPins())
@@ -229,7 +232,7 @@ namespace KeyActions
 
     protected:
         std::string m_Name = "*Unnamed Node*";
-        NE::NodeId m_NodeId = NODE_ID_NONE;
+        NodeID m_NodeId = NODE_ID_NONE;
 
         std::vector<Pin> m_Pins;
         
