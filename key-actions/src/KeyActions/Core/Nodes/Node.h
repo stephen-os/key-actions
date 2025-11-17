@@ -75,6 +75,8 @@ namespace KeyActions
 
         std::vector<Pin>& GetPins() { return m_Pins; }
 
+		size_t GetPinCount() const { return m_Pins.size(); }
+
         Pin* GetPin(const PinID& id)
         {
             for (auto& pin : m_Pins)
