@@ -243,3 +243,33 @@ namespace KeyActions
         glm::vec2 m_Position = { 0.0f, 0.0f };
     };
 }
+
+namespace std
+{
+    template<>
+    struct hash<KeyActions::NodeID>
+    {
+        size_t operator()(const KeyActions::NodeID& id) const noexcept
+        {
+            return hash<uint64_t>()(id.Get());
+        }
+    };
+
+    template<>
+    struct hash<KeyActions::PinID>
+    {
+        size_t operator()(const KeyActions::PinID& id) const noexcept
+        {
+            return hash<uint64_t>()(id.Get());
+        }
+    };
+
+    template<>
+    struct hash<KeyActions::LinkID>
+    {
+        size_t operator()(const KeyActions::LinkID& id) const noexcept
+        {
+            return hash<uint64_t>()(id.Get());
+        }
+    };
+}
