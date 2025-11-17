@@ -24,6 +24,8 @@ namespace KeyActions
     enum class NodeType
     {
         Start = 0,
+        End,
+
         KeyPress,
         KeyRelease,
 
