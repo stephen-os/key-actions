@@ -17,7 +17,7 @@ namespace KeyActions
         AddPin(CreatePin("Output", PinType::Output));
 	}
 
-    Node::NodePtr MouseReleaseNode::Execute(Lumina::GlobalInputPlayback* playback)
+    Ref<Node> MouseReleaseNode::Execute(Lumina::GlobalInputPlayback* playback)
     {
         LUMINA_ASSERT(playback != nullptr, "MouseReleaseNode: Playback system is null in MouseReleaseNode execution");
         

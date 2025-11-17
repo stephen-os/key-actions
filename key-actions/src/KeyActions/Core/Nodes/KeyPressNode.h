@@ -13,7 +13,7 @@ namespace KeyActions
 
         KeyPressNode(Lumina::KeyCode key);
 
-        NodePtr Execute(Lumina::GlobalInputPlayback* playback) override;
+        Ref<Node> Execute(Lumina::GlobalInputPlayback* playback) override;
 
 		NodeType GetType() const override { return NodeType::KeyPress; }
         

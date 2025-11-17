@@ -13,7 +13,7 @@ namespace KeyActions
 
 		MouseReleaseNode(Lumina::MouseCode button, int x, int y);
 
-		NodePtr Execute(Lumina::GlobalInputPlayback* playback) override;
+        Ref<Node> Execute(Lumina::GlobalInputPlayback* playback) override;
 
 		NodeType GetType() const override { return NodeType::MouseRelease; }
 

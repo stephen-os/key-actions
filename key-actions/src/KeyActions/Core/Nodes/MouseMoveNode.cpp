@@ -13,7 +13,7 @@ namespace KeyActions
 		AddPin(CreatePin("Output", PinType::Output));
     }
 
-    Node::NodePtr MouseMoveNode::Execute(Lumina::GlobalInputPlayback* playback)
+    Ref<Node> MouseMoveNode::Execute(Lumina::GlobalInputPlayback* playback)
     {
 		// LUMINA_ASSERT(m_X >= 0 && m_Y >= 0, "MouseMoveNode: Invalid mouse coordinates");
         LUMINA_ASSERT(playback != nullptr, "KeyPressNode: Playback system is null in KeyPressNode execution");

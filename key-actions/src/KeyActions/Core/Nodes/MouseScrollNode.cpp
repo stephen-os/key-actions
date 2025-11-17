@@ -16,7 +16,7 @@ namespace KeyActions
 		AddPin(CreatePin("Out", PinType::Output));
     }
 
-    Node::NodePtr MouseScrollNode::Execute(Lumina::GlobalInputPlayback* playback)
+    Ref<Node> MouseScrollNode::Execute(Lumina::GlobalInputPlayback* playback)
     {
 		LUMINA_ASSERT(playback != nullptr, "MouseScrollNode: Playback system is null in MouseScrollNode execution");
 

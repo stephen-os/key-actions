@@ -10,7 +10,7 @@ namespace KeyActions
         AddPin(CreatePin("Output", PinType::Output));
     }
 
-    Node::NodePtr StartNode::Execute(Lumina::GlobalInputPlayback* playback)
+    Ref<Node> StartNode::Execute(Lumina::GlobalInputPlayback* playback)
     {
         LUMINA_ASSERT(playback != nullptr, "Playback system is null in StartNode execution");
         LUMINA_LOG_INFO("StartNode: Beginning execution");

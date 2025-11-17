@@ -13,7 +13,7 @@ namespace KeyActions
         AddPin(CreatePin("Output", PinType::Output));
     }
 
-    Node::NodePtr KeyPressNode::Execute(Lumina::GlobalInputPlayback* playback)
+    Ref<Node> KeyPressNode::Execute(Lumina::GlobalInputPlayback* playback)
     {
         LUMINA_ASSERT(m_Key != Lumina::KeyCode::Unknown, "KeyPressNode: Invalid key code");
         LUMINA_ASSERT(playback != nullptr, "KeyPressNode: Playback system is null in KeyPressNode execution");

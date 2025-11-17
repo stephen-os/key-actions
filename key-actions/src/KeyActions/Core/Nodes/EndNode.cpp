@@ -16,7 +16,7 @@ namespace KeyActions
         AddPin(CreatePin("Input", PinType::Input));
     }
 
-    Node::NodePtr EndNode::Execute(Lumina::GlobalInputPlayback* playback)
+    Ref<Node> EndNode::Execute(Lumina::GlobalInputPlayback* playback)
     {
         LUMINA_ASSERT(playback != nullptr, "Playback system is null in EndNode execution");
         LUMINA_LOG_INFO("EndNode: Finished execution with exit code {}", m_ExitCode);

@@ -11,7 +11,7 @@ namespace KeyActions
         
         MouseScrollNode(int scrollDX, int scrollDY);
 
-		NodePtr Execute(Lumina::GlobalInputPlayback* playback) override;
+        Ref<Node> Execute(Lumina::GlobalInputPlayback* playback) override;
 		
         NodeType GetType() const override { return NodeType::MouseScroll; }
 		
