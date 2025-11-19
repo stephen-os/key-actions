@@ -32,7 +32,7 @@ project "Nodes"
    links
    {
       "Lumina",
-      "KeyActions"
+      "KeyActionsLib"
    }
 
    buildoptions { "/utf-8" }
