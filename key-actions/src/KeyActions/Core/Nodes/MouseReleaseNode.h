@@ -17,8 +17,6 @@ namespace KeyActions
 
 		NodeType GetType() const override { return NodeType::MouseRelease; }
 
-		bool CanConnect(PinType sourceType, PinType targetType) override;
-        
         Lumina::MouseCode GetButton() const;
     private:
         Lumina::MouseCode m_Button;

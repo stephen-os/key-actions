@@ -22,9 +22,4 @@ namespace KeyActions
         LUMINA_LOG_INFO("EndNode: Finished execution with exit code {}", m_ExitCode);
         return nullptr;
     }
-
-    bool EndNode::CanConnect(PinType sourceType, PinType targetType)
-    {
-        return (sourceType == PinType::Output && targetType == PinType::Input);
-    }
 }

@@ -15,8 +15,6 @@ namespace KeyActions
 		
         NodeType GetType() const override { return NodeType::MouseScroll; }
 		
-        bool CanConnect(PinType sourceType, PinType targetType) override;
-
         int GetScrollDX() const;
         int GetScrollDY() const;
 

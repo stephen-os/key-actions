@@ -16,8 +16,6 @@ namespace KeyActions
 
         NodeType GetType() const override { return NodeType::MouseMove; }
 
-        bool CanConnect(PinType sourceType, PinType targetType) override;
-
         int GetX() const;
         int GetY() const;
 

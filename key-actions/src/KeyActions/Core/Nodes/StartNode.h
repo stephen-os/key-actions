@@ -13,7 +13,5 @@ namespace KeyActions
         Ref<Node> Execute(Lumina::GlobalInputPlayback* playback) override;
 
 		NodeType GetType() const override { return NodeType::Start; }
-
-        bool CanConnect(PinType sourceType, PinType targetType) override;
     };
 }

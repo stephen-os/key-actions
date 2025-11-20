@@ -16,8 +16,6 @@ namespace KeyActions
 
         NodeType GetType() const override { return NodeType::KeyPress; }
 
-        bool CanConnect(PinType sourceType, PinType targetType) override;
-
         Lumina::KeyCode GetKey() const;
 
     private:

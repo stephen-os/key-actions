@@ -28,15 +28,6 @@ namespace KeyActions
         return nullptr;
     }
 
-    bool MouseMoveNode::CanConnect(PinType sourceType, PinType targetType)
-    {
-        // Rule: KeyPressNode allows bidirectional connections
-        // 1. Output pins can connect to Input pins
-        // 2. Input pins can connect to Output pins
-        return ((sourceType == PinType::Output && targetType == PinType::Input) ||
-            (sourceType == PinType::Input && targetType == PinType::Output));
-    }
-
     int MouseMoveNode::GetX() const
     {
         return m_X;

@@ -31,15 +31,6 @@ namespace KeyActions
         return nullptr;
 	}
 
-    bool MouseScrollNode::CanConnect(PinType sourceType, PinType targetType)
-    {
-        // Rule: MouseScrollNode allows bidirectional connections
-        // 1. Output pins can connect to Input pins
-        // 2. Input pins can connect to Output pins
-        return ((sourceType == PinType::Output && targetType == PinType::Input) ||
-            (sourceType == PinType::Input && targetType == PinType::Output));
-	}
-
     int MouseScrollNode::GetScrollDX() const
     {
         return m_ScrollDX;

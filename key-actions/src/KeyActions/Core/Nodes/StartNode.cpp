@@ -23,12 +23,6 @@ namespace KeyActions
         return nullptr;
     }
 
-    bool StartNode::CanConnect(PinType sourceType, PinType targetType)
-    {
-        // Rule: StartNode only allows Output to Input connections
-        return (sourceType == PinType::Output && targetType == PinType::Input);
-    }
-
     Lumina::Ref<StartNode> StartNode::Create()
     {
         return Lumina::CreateRef<StartNode>();

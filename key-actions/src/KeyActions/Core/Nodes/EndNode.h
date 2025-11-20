@@ -13,7 +13,6 @@ namespace KeyActions
 
         Ref<Node> Execute(Lumina::GlobalInputPlayback* playback) override;
         NodeType GetType() const override { return NodeType::End; }
-        bool CanConnect(PinType sourceType, PinType targetType) override;
 
         void SetExitCode(int code) { m_ExitCode = code; }
         int GetExitCode() const { return m_ExitCode; }

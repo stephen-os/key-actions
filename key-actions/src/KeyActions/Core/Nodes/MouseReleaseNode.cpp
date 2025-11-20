@@ -32,15 +32,6 @@ namespace KeyActions
         return nullptr;
 	}
 
-    bool MouseReleaseNode::CanConnect(PinType sourceType, PinType targetType)
-    {
-        // Rule: MouseReleaseNode allows bidirectional connections
-        // 1. Output pins can connect to Input pins
-        // 2. Input pins can connect to Output pins
-        return ((sourceType == PinType::Output && targetType == PinType::Input) ||
-            (sourceType == PinType::Input && targetType == PinType::Output));
-    }
-
     Lumina::MouseCode MouseReleaseNode::GetButton() const
     {
         return m_Button;
