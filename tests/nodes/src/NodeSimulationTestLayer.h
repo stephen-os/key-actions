@@ -355,7 +355,7 @@ namespace Lumina
             }
         }
 
-        std::string GenerateResultsReport(const KeyActions::Testing::NodeSimulationTestSuite::TestSummary& summary)
+        std::string GenerateResultsReport(const KeyActions::Tests::NodeSimulationTestSuite::TestSummary& summary)
         {
             std::stringstream ss;
 
@@ -397,7 +397,7 @@ namespace Lumina
         }
 
     private:
-        KeyActions::Testing::NodeSimulationTestSuite m_TestSuite;
+        KeyActions::Tests::NodeSimulationTestSuite m_TestSuite;
 
         // UI State
         bool m_RunTestsOnStartup = false;
