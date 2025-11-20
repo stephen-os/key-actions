@@ -7,14 +7,13 @@ namespace KeyActions
     class MouseScrollNode : public Node
     {
     public:
-        static Lumina::Ref<MouseScrollNode> Create(int scrollDX, int scrollDY);
-        
+        static Ref<MouseScrollNode> Create(int scrollDX, int scrollDY);
+
         MouseScrollNode(int scrollDX, int scrollDY);
 
         Ref<Node> Execute(Lumina::GlobalInputPlayback* playback) override;
-		
         NodeType GetType() const override { return NodeType::MouseScroll; }
-		
+
         int GetScrollDX() const;
         int GetScrollDY() const;
 

@@ -9,14 +9,13 @@ namespace KeyActions
     class KeyPressNode : public Node
     {
     public:
-        static Lumina::Ref<KeyPressNode> Create(Lumina::KeyCode key);
+        static Ref<KeyPressNode> Create(Lumina::KeyCode key);
 
         KeyPressNode(Lumina::KeyCode key);
 
         Ref<Node> Execute(Lumina::GlobalInputPlayback* playback) override;
+        NodeType GetType() const override { return NodeType::KeyPress; }
 
-		NodeType GetType() const override { return NodeType::KeyPress; }
-        
         Lumina::KeyCode GetKey() const;
 
     private:

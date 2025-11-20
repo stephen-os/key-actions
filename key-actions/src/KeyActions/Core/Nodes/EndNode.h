@@ -7,7 +7,7 @@ namespace KeyActions
     class EndNode : public Node
     {
     public:
-        static Lumina::Ref<EndNode> Create();
+        static Ref<EndNode> Create();
         
         EndNode();
 
