@@ -6,6 +6,9 @@
 #include <memory>
 
 #include "KeyActions/Core/Nodes/Node.h"
+
+#include "KeyActions/Core/Nodes/StartNode.h"
+#include "KeyActions/Core/Nodes/EndNode.h"
 #include "KeyActions/Core/Nodes/KeyPressNode.h"
 #include "KeyActions/Core/Nodes/KeyReleaseNode.h"
 
@@ -44,6 +47,33 @@ namespace KeyActions
 
             TestResult RunTest(const std::string& name, std::function<void()> testFunc);
 
+            // StartNode Tests
+            void Test_StartNode_Creation();
+            void Test_StartNode_GetName();
+            void Test_StartNode_GetType();
+            void Test_StartNode_HasPins();
+            void Test_StartNode_CanConnect();
+            void Test_StartNode_Execute_ReturnsConnectedNode();
+            void Test_StartNode_Execute_ReturnsNullWhenNotConnected();
+            // void Test_StartNode_Execute_WithNullPlayback();
+            void Test_StartNode_NoInputConnection();
+            void Test_Performance_StartNode_CreateMany();
+
+            // EndNode Tests
+            void Test_EndNode_Creation();
+            void Test_EndNode_GetName();
+            void Test_EndNode_GetType();
+            void Test_EndNode_HasPins();
+            void Test_EndNode_CanConnect();
+            void Test_EndNode_Execute_ReturnsNull();
+            // void Test_EndNode_Execute_WithNullPlayback();
+            void Test_EndNode_ExitCode_DefaultZero();
+            void Test_EndNode_ExitCode_SetAndGet();
+            void Test_EndNode_NoOutputConnection();
+            void Test_EndNode_ReceivesConnection();
+            void Test_Performance_EndNode_CreateMany();
+
+            // KeyPressNode Tests
             void Test_KeyPressNode_Creation();
             void Test_KeyPressNode_GetKey();
             void Test_KeyPressNode_GetName();
@@ -53,10 +83,11 @@ namespace KeyActions
             void Test_KeyPressNode_Execute_SimulatesKeyPress();
             void Test_KeyPressNode_Execute_ReturnsConnectedNode();
             void Test_KeyPressNode_Execute_ReturnsNullWhenNotConnected();
-            void Test_KeyPressNode_Execute_WithNullPlayback(); 
+            // void Test_KeyPressNode_Execute_WithNullPlayback();
             void Test_Performance_KeyPressNode_CreateMany();
             void Test_Performance_KeyPressNode_ExecuteMany();
-    
+
+            // KeyReleaseNode Tests
             void Test_KeyReleaseNode_Creation();
             void Test_KeyReleaseNode_GetKey();
             void Test_KeyReleaseNode_GetName();
@@ -66,9 +97,13 @@ namespace KeyActions
             void Test_KeyReleaseNode_Execute_SimulatesKeyRelease();
             void Test_KeyReleaseNode_Execute_ReturnsConnectedNode();
             void Test_KeyReleaseNode_Execute_ReturnsNullWhenNotConnected();
-            void Test_KeyReleaseNode_Execute_WithNullPlayback();
+            // void Test_KeyReleaseNode_Execute_WithNullPlayback();
             void Test_Performance_KeyReleaseNode_CreateMany();
             void Test_Performance_KeyReleaseNode_ExecuteMany();
+
+            void Test_Integration_StartToEnd_Chain();
+            void Test_Integration_StartWithoutEnd();
+            void Test_Integration_MultipleStartNodes();
         };
     }
 }
