@@ -1,18 +1,23 @@
 #include "StartNode.h"
+
 #include "Lumina/Core/Log.h"
 #include "Lumina/Core/Assert.h"
 
 namespace KeyActions
 {
-    StartNode::StartNode() : Node("Start")
+    Ref<StartNode> StartNode::Create()
     {
-        m_Name = "Start Node";
+        return Lumina::CreateRef<StartNode>();
+    }
+
+    StartNode::StartNode() : Node("Start Node")
+    {
         AddPin(CreatePin("Output", PinType::Output));
     }
 
     Ref<Node> StartNode::Execute(Lumina::GlobalInputPlayback* playback)
     {
-        LUMINA_ASSERT(playback != nullptr, "Playback system is null in StartNode execution");
+        LUMINA_ASSERT(playback != nullptr, "StartNode: Playback system is null in StartNode execution");
         LUMINA_LOG_INFO("StartNode: Beginning execution");
 
         Pin* outputPin = GetPin(PinType::Output);
@@ -21,10 +26,5 @@ namespace KeyActions
 
         LUMINA_LOG_CRITICAL("StartNode: No connected nodes to execute");
         return nullptr;
-    }
-
-    Lumina::Ref<StartNode> StartNode::Create()
-    {
-        return Lumina::CreateRef<StartNode>();
     }
 }

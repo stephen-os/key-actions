@@ -2,10 +2,7 @@
 
 namespace KeyActions
 {
-    Node::Node(const std::string& name)
-        : m_Name(name), m_NodeId(Lumina::UUID::Generate())
-    {
-    }
+    Node::Node(const std::string& name) : m_Name(name), m_NodeId(Lumina::UUID::Generate()) {}
 
     Node::~Node()
     {

@@ -6,9 +6,13 @@
 
 namespace KeyActions
 {
-    KeyPressNode::KeyPressNode(Lumina::KeyCode key) : Node("KeyPress"), m_Key(key)
+    Ref<KeyPressNode> KeyPressNode::Create(Lumina::KeyCode key)
     {
-        m_Name = "Press " + Lumina::Input::KeyCodeToString(m_Key);
+        return Lumina::CreateRef<KeyPressNode>(key);
+    }
+
+    KeyPressNode::KeyPressNode(Lumina::KeyCode key) : Node("Key Press"), m_Key(key)
+    {
         AddPin(CreatePin("Input", PinType::Input));
         AddPin(CreatePin("Output", PinType::Output));
     }
@@ -19,7 +23,7 @@ namespace KeyActions
         LUMINA_ASSERT(playback != nullptr, "KeyPressNode: Playback system is null in KeyPressNode execution");
 
         playback->SimulateKeyPress(m_Key);
-        LUMINA_LOG_INFO("Simulated key press of {}", Lumina::Input::KeyCodeToString(m_Key));
+        LUMINA_LOG_INFO("KeyPressNode: Simulated key press of {}", Lumina::Input::KeyCodeToString(m_Key));
 
         Pin* outputPin = GetPin(PinType::Output);
         if (outputPin && outputPin->ConnectedNode)
@@ -31,10 +35,5 @@ namespace KeyActions
     Lumina::KeyCode KeyPressNode::GetKey() const
     {
         return m_Key;
-    }
-
-    Lumina::Ref<KeyPressNode> KeyPressNode::Create(Lumina::KeyCode key)
-    {
-        return Lumina::CreateRef<KeyPressNode>(key);
     }
 }

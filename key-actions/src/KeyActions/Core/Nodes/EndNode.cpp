@@ -5,14 +5,13 @@
 
 namespace KeyActions
 {
-    Lumina::Ref<EndNode> EndNode::Create()
+    Ref<EndNode> EndNode::Create()
     {
         return Lumina::CreateRef<EndNode>();
     }
 
-    EndNode::EndNode() : Node("End")
+    EndNode::EndNode() : Node("End Node")
     {
-        m_Name = "End Node";
         AddPin(CreatePin("Input", PinType::Input));
     }
 
